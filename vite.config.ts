@@ -19,6 +19,9 @@ export default defineConfig({
       "@lib": resolve(__dirname, "src/lib"),
       "@types": resolve(__dirname, "src/types"),
       "@router": resolve(__dirname, "src/router"),
+      "@routes": resolve(__dirname, "src/routes"),
+      "@util": resolve(__dirname, "src/util"),
+      "@context": resolve(__dirname, "src/context"),
     },
   },
 });

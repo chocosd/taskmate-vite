@@ -23,7 +23,10 @@
       "@hooks/*": ["hooks/*"],
       "@lib/*": ["lib/*"],
       "@types/*": ["types/*"],
-      "@router/*": ["router/*"]
+      "@router/*": ["router/*"],
+      "@routes/*": ["routes/*"],
+      "@util/*": ["util/*"],
+      "@context/*": ["context/*"]
     },
 
     /* Linting */
