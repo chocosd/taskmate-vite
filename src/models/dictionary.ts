@@ -1,5 +1,5 @@
-import { ObjectKey } from "./object-key.type";
+import { type ObjectKey } from './object-key';
 
 export type Dictionary<TValue = string, TKey extends ObjectKey = string> = {
-  [K in TKey]: TValue;
+    [K in TKey]: TValue;
 };
