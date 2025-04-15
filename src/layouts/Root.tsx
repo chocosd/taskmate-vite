@@ -1,4 +1,5 @@
 import ThemeToggle from "@components/ThemeToggle";
+import Logo from "@components/ui/Logo";
 import { useAuth } from "@hooks/useAuth.hooks";
 import { Bell, UserCircle2 } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router-dom";
@@ -15,7 +16,9 @@ export default function Root() {
       {shouldShowLayout && (
         <header className="h-16 px-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-white dark:bg-zinc-900 w-full">
           <div className="text-lg font-bold tracking-tight">
-            <Link to="/">Taskmate</Link>
+            <Link to="/">
+              <Logo size={{h: 24 }}/>
+            </Link>
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />

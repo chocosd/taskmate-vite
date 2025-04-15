@@ -3,7 +3,7 @@ import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import Button from "./ui/Button";
 
-export default function ThemeToggle() {
+export default function ThemeToggle({className}: {className?: string[] | string}) {
   const { theme, toggleTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -15,12 +15,14 @@ export default function ThemeToggle() {
     return null;
   }
 
+  const classes = Array.isArray(className) ? className.join(' ') : className;
+
   const icon = theme === "dark"
     ? <Sun className="h-4 w-4" />
     : <Moon className="h-4 w-4" />;
 
   return (
-    <Button action={toggleTheme}>
+    <Button action={toggleTheme} classes={classes}>
       {icon}
       <span className="sr-only">Toggle theme</span>
     </Button>

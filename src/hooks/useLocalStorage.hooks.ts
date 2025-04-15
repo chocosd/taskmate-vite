@@ -1,6 +1,8 @@
+import { invokeIfFn } from "@util/functions/invoke-if-fn";
 import { isBrowser } from "@util/functions/is-browser";
 import { useEffect, useState } from "react";
 
+type InitialValue<T> = T | (() => T);
 type LocalStorageState<T = unknown> = readonly [
   T,
   React.Dispatch<React.SetStateAction<T>>
@@ -8,24 +10,24 @@ type LocalStorageState<T = unknown> = readonly [
 
 export function useLocalStorage<T = unknown>(
   key: string,
-  defaultValue: T
+  initialValue: InitialValue<T>
 ): LocalStorageState<T> {
   const [value, setValue] = useState<T>(() => {
     try {
       if (!isBrowser()) {
-        return defaultValue;
+        return invokeIfFn(initialValue);
       }
 
       const stored = localStorage.getItem(key);
-
-      if (stored) {
+      if (stored !== null) {
         return JSON.parse(stored);
       }
 
-      return defaultValue;
+      return invokeIfFn(initialValue);
     } catch (error) {
       console.error(`Error reading localStorage key "${key}":`, error);
-      return defaultValue;
+
+      return invokeIfFn(initialValue);
     }
   });
 
