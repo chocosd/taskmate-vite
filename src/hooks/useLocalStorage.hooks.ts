@@ -1,5 +1,5 @@
-import { invokeIfFn } from '@util/functions/invoke-if-fn';
-import { isBrowser } from '@util/functions/is-browser';
+import { invokeIfFn } from '@utils/functions/invoke-if-fn';
+import { isBrowser } from '@utils/functions/is-browser';
 import { useEffect, useState } from 'react';
 
 type InitialValue<T> = T | (() => T);

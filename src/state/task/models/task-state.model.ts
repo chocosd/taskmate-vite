@@ -14,6 +14,11 @@ export interface AddTaskAction extends BaseTaskAction {
     payload: { title: string; generated?: boolean };
 }
 
+export interface AssignTaskAction extends BaseTaskAction {
+    type: TaskActionTypes.AssignTask;
+    payload: { id: string; email: string };
+}
+
 export interface ToggleTaskAction extends BaseTaskAction {
     type: TaskActionTypes.ToggleTask;
     payload: { id: string };
@@ -24,4 +29,14 @@ export interface DeleteTaskAction extends BaseTaskAction {
     payload: { id: string };
 }
 
-export type TaskAction = AddTaskAction | ToggleTaskAction | DeleteTaskAction;
+export interface ReorderTaskAction extends BaseTaskAction {
+    type: TaskActionTypes.ReorderTasks;
+    payload: Task[];
+}
+
+export type TaskAction =
+    | AddTaskAction
+    | AssignTaskAction
+    | ToggleTaskAction
+    | DeleteTaskAction
+    | ReorderTaskAction;

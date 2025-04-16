@@ -1,5 +1,5 @@
 import { useTheme } from '@hooks/useTheme.hooks';
-import { isNumber } from '@util/functions/is-number';
+import { isNumber } from '@utils/functions/is-number';
 
 type LogoSize = {
     w?: number | 'auto';

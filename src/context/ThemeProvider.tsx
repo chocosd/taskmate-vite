@@ -1,4 +1,4 @@
-import { isBrowser } from '@util/functions/is-browser';
+import { isBrowser } from '@utils/functions/is-browser';
 import { createContext, useEffect, useState } from 'react';
 
 type Theme = 'light' | 'dark';

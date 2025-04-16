@@ -21,7 +21,7 @@ export default defineConfig({
             '@models': resolve(__dirname, 'src/models'),
             '@router': resolve(__dirname, 'src/router'),
             '@routes': resolve(__dirname, 'src/routes'),
-            '@util': resolve(__dirname, 'src/util'),
+            '@utils': resolve(__dirname, 'src/utils'),
             '@context': resolve(__dirname, 'src/context'),
         },
     },

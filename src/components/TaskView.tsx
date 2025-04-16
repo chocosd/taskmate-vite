@@ -4,10 +4,14 @@ import Button from '@ui/Button';
 import { PlusCircle, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import TaskList from './TaskList';
+import TabButton from './ui/TabButton';
+
+type TaskListView = 'active' | 'completed' | 'all';
 
 export default function TaskView() {
-    const { dispatch } = useTasks();
+    const { dispatch, state } = useTasks();
     const [input, setInput] = useState('');
+    const [view, setView] = useState<TaskListView>('all');
 
     const handleAddTask = () => {
         if (!input.trim()) {
@@ -18,6 +22,18 @@ export default function TaskView() {
 
         setInput('');
     };
+
+    const filteredTasks = state.tasks.filter((task) => {
+        if (view === "active") {
+            return !task.completed;
+        }
+
+        if (view === "completed") {
+            return task.completed;
+        }
+
+        return true;
+      });
 
     const handleAIStub = () => {
         dispatch({
@@ -41,11 +57,13 @@ export default function TaskView() {
         }
     };
 
+    const isTabActive = (taskView: TaskListView) => taskView === view;
+
     return (
         <div className="w-full max-w-2xl mx-auto p-4">
             <h1 className="text-2xl font-semibold mb-6">Your Tasks</h1>
 
-            <div className="flex items-center gap-2 mb-6">
+            <div className="flex items-center gap-2 mb-4">
                 <input
                     type="text"
                     placeholder="Add a new task"
@@ -64,7 +82,13 @@ export default function TaskView() {
                 </Button>
             </div>
 
-            <TaskList />
+            <div className="flex gap-2 mb-4">
+                <TabButton name="All"  isActive={isTabActive('all')} action={() => setView("all")}/>
+                <TabButton name="Active" isActive={isTabActive('active')} action={() => setView("active")}/>
+                <TabButton name="Completed" isActive={isTabActive('completed')} action={() => setView("completed")}/>
+            </div>
+
+            <TaskList tasks={filteredTasks}/>
         </div>
     );
 }
