@@ -11,7 +11,7 @@ export interface BaseTaskAction {
 
 export interface AddTaskAction extends BaseTaskAction {
     type: TaskActionTypes.AddTask;
-    payload: { title: string; generated?: boolean };
+    payload: { title: string; generated?: boolean; order: number; parentId?: string };
 }
 
 export interface AssignTaskAction extends BaseTaskAction {

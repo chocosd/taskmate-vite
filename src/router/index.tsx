@@ -1,3 +1,4 @@
+import TaskView from '@components/TaskView';
 import Root from '@layouts/Root';
 import About from '@pages/About';
 import Dashboard from '@pages/Dashboard';
@@ -13,7 +14,10 @@ export const router = createBrowserRouter(
             <Route path={Routes.Login} element={<Login />} />
 
             <Route element={<ProtectedRoute />}>
-                <Route path={Routes.Dashboard} element={<Dashboard />} />
+                <Route path={Routes.Dashboard} element={<Dashboard />}>
+                    <Route index element={<TaskView />} />
+                    <Route path=":taskId" element={<TaskView />} />
+                </Route>
             </Route>
         </Route>
     )

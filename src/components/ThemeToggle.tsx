@@ -1,7 +1,7 @@
 import { useTheme } from '@hooks/useTheme.hooks';
+import Button from '@ui/Button';
 import { Moon, Sun } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import Button from './ui/Button';
 
 export default function ThemeToggle({ className }: { className?: string[] | string }) {
     const { theme, toggleTheme } = useTheme();

@@ -15,6 +15,7 @@ export default defineConfig({
             '@ui': resolve(__dirname, 'src/components/ui'),
             '@layouts': resolve(__dirname, 'src/layouts'),
             '@pages': resolve(__dirname, 'src/pages'),
+            '@enums': resolve(__dirname, 'src/enums'),
             '@hooks': resolve(__dirname, 'src/hooks'),
             '@lib': resolve(__dirname, 'src/lib'),
             '@state': resolve(__dirname, 'src/state'),
@@ -23,6 +24,7 @@ export default defineConfig({
             '@routes': resolve(__dirname, 'src/routes'),
             '@utils': resolve(__dirname, 'src/utils'),
             '@context': resolve(__dirname, 'src/context'),
+            '@styles': resolve(__dirname, 'src/styles'),
         },
     },
 });
