@@ -12,6 +12,7 @@
     "dependencies": {
         "lucide-react": "^0.488.0",
         "nanoid": "^5.1.5",
+        "openai": "^4.94.0",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "react-router-dom": "^6.30.0"

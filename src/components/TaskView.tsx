@@ -1,9 +1,11 @@
 import { useTasks } from '@hooks/useTasks.hooks';
 import { TaskActionTypes } from '@state/task/enums/task-state.enum';
 import Button from '@ui/Button';
+import { generateTasksFromPrompt } from '@utils/generate-tasks-from-prompt';
 import { PlusCircle, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import TaskList from './TaskList';
+import GeneratingIndicator from './ui/GeneratingIndicator';
 import TabButton from './ui/TabButton';
 
 type TaskListView = 'active' | 'completed' | 'all';
@@ -12,6 +14,7 @@ export default function TaskView() {
     const { dispatch, state } = useTasks();
     const [input, setInput] = useState('');
     const [view, setView] = useState<TaskListView>('all');
+    const [isGenerating, setIsGenerating] = useState(false);
 
     const handleAddTask = () => {
         if (!input.trim()) {
@@ -24,32 +27,41 @@ export default function TaskView() {
     };
 
     const filteredTasks = state.tasks.filter((task) => {
-        if (view === "active") {
+        if (view === 'active') {
             return !task.completed;
         }
 
-        if (view === "completed") {
+        if (view === 'completed') {
             return task.completed;
         }
 
         return true;
-      });
+    });
 
-    const handleAIStub = () => {
-        dispatch({
+    const handleGenerateTasks = async () => {
+      if (!input.trim()) {
+        return;
+      };
+
+      setIsGenerating(true);
+    
+      try {
+        const aiTasks = await generateTasksFromPrompt(input.trim());
+    
+        aiTasks.forEach((title) =>
+          dispatch({
             type: TaskActionTypes.AddTask,
-            payload: { title: 'Learn React fundamentals', generated: true },
-        });
-        dispatch({
-            type: TaskActionTypes.AddTask,
-            payload: { title: 'Build a task manager', generated: true },
-        });
-        dispatch({
-            type: TaskActionTypes.AddTask,
-            payload: { title: 'Add dark mode support', generated: true },
-        });
+            payload: { title, generated: true },
+          })
+        );
+        setInput("");
+      } catch (err) {
+          console.error("AI generation failed", err);
+      } finally {
+        setIsGenerating(false);
+      }
     };
-
+    
     const handleSubmitOnEnter = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -76,19 +88,31 @@ export default function TaskView() {
                     <PlusCircle className="w-4 h-4 mr-2" />
                     Add
                 </Button>
-                <Button action={handleAIStub} classes={['bg-blue-600 text-white']}>
+                <Button action={handleGenerateTasks} classes={['bg-blue-600 text-white']}>
                     <Sparkles className="w-4 h-4 mr-2" />
                     Generate
                 </Button>
             </div>
 
             <div className="flex gap-2 mb-4">
-                <TabButton name="All"  isActive={isTabActive('all')} action={() => setView("all")}/>
-                <TabButton name="Active" isActive={isTabActive('active')} action={() => setView("active")}/>
-                <TabButton name="Completed" isActive={isTabActive('completed')} action={() => setView("completed")}/>
+                <TabButton name="All" isActive={isTabActive('all')} action={() => setView('all')} />
+                <TabButton
+                    name="Active"
+                    isActive={isTabActive('active')}
+                    action={() => setView('active')}
+                />
+                <TabButton
+                    name="Completed"
+                    isActive={isTabActive('completed')}
+                    action={() => setView('completed')}
+                />
             </div>
 
-            <TaskList tasks={filteredTasks}/>
+            {isGenerating ? (
+                <GeneratingIndicator/>
+            ) : (
+                <TaskList tasks={filteredTasks} />
+            )}
         </div>
     );
 }
