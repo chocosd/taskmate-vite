@@ -1,15 +1,10 @@
 import OpenAI from 'openai';
 
-export type OpenaiFetchOptions = {
-    signal: AbortSignal;
-};
-
 const openai = new OpenAI({
     apiKey: import.meta.env.VITE_OPENAI_API_KEY,
     fetch: (url, options = {}) =>
         fetch(url, {
             ...options,
-            signal: (options as OpenaiFetchOptions).signal,
         }),
     ...(import.meta.env.DEV && { dangerouslyAllowBrowser: true }),
 });
