@@ -21,13 +21,15 @@
             "@layouts/*": ["layouts/*"],
             "@pages/*": ["pages/*"],
             "@hooks/*": ["hooks/*"],
+            "@enums/*": ["enums/*"],
             "@lib/*": ["lib/*"],
             "@models/*": ["models/*"],
             "@router/*": ["router/*"],
             "@routes/*": ["routes/*"],
             "@utils/*": ["utils/*"],
             "@state/*": ["state/*"],
-            "@context/*": ["context/*"]
+            "@context/*": ["context/*"],
+            "@styles/*": ["styles/*"]
         },
 
         /* Linting */

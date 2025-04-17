@@ -23,7 +23,7 @@ export async function generateTasksFromPrompt(prompt: string): Promise<string[]>
 
     const content = response.choices[0].message.content ?? '';
 
-    if (content.startsWith('Error:')) {
+    if (content.startsWith('Error')) {
         throw new Error(content);
     }
 

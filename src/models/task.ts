@@ -1,3 +1,5 @@
+import { TaskStatus } from '@state/task/enums/task-status.enum';
+
 export type Task = {
     id: string;
     title: string;
@@ -6,4 +8,6 @@ export type Task = {
     generated?: boolean;
     assignedTo?: string;
     parentId?: string;
+    order: number;
+    subtasks?: TaskStatus[];
 };

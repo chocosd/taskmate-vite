@@ -1,6 +1,8 @@
+import { ToastType } from '@enums/toast-type.enum';
 import { invokeIfFn } from '@utils/functions/invoke-if-fn';
 import { isBrowser } from '@utils/functions/is-browser';
 import { useEffect, useState } from 'react';
+import { useToast } from './useToast.hooks';
 
 type InitialValue<T> = T | (() => T);
 type LocalStorageState<T = unknown> = readonly [T, React.Dispatch<React.SetStateAction<T>>];
@@ -9,6 +11,8 @@ export function useLocalStorage<T = unknown>(
     key: string,
     initialValue: InitialValue<T>
 ): LocalStorageState<T> {
+    const { showToast } = useToast();
+
     const [value, setValue] = useState<T>(() => {
         try {
             if (!isBrowser()) {
@@ -22,7 +26,7 @@ export function useLocalStorage<T = unknown>(
 
             return invokeIfFn(initialValue);
         } catch (error) {
-            console.error(`Error reading localStorage key "${key}":`, error);
+            showToast(ToastType.Error, `Error reading localStorage key "${key}": ${error}`);
 
             return invokeIfFn(initialValue);
         }
@@ -32,9 +36,9 @@ export function useLocalStorage<T = unknown>(
         try {
             localStorage.setItem(key, JSON.stringify(value));
         } catch (error) {
-            console.error(`Error writing to localStorage key "${key}":`, error);
+            showToast(ToastType.Error, `Error writing to localStorage key "${key}": ${error}`);
         }
-    }, [key, value]);
+    }, [key, value, showToast]);
 
     return [value, setValue] as const;
 }
