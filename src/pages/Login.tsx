@@ -13,7 +13,7 @@ export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const from = location.state?.from?.pathname || Routes.Dashboard;
+    const from = location.state?.from?.pathname ?? `/${Routes.Dashboard}`;
 
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
@@ -22,12 +22,13 @@ export default function Login() {
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
     };
-
+    
     const handleSubmit = (e: FormEvent) => {
-        e.preventDefault();
-        login(email);
-        navigate(from, { replace: true });
+      e.preventDefault();
+      login(email);
+      navigate(from, { replace: true });
     };
+    
 
     return (
         <div className="min-h-screen flex flex-col md:flex-row bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-white">

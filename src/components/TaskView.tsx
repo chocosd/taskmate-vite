@@ -16,6 +16,7 @@ type TaskListView = 'active' | 'completed' | 'all';
 
 export default function TaskView() {
     const { dispatch, state } = useTasks();
+    // const { sharePromptPeerId, myId, triggerSharePrompt, sendChannelMessage } = useSharedWindow();
     const { showToast } = useToast();
 
     const navigate = useNavigate();
@@ -76,6 +77,17 @@ export default function TaskView() {
         }
     };
 
+    // const handleAcceptShare = () => {
+    //     sendChannelMessage({
+    //         type: ChannelMessageType.TaskShareAccept,
+    //         payload: { id: myId },
+    //     });
+
+    //     triggerSharePrompt(null);
+    // };
+
+    // const handleDeclineShare = () => triggerSharePrompt(null);
+
     const handleSubmitOnEnter = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -103,71 +115,80 @@ export default function TaskView() {
         .sort((a, b) => a.order - b.order);
 
     return (
-        <div className="w-full max-w-2xl mx-auto p-4">
-            {taskId && (
-                <div className="mb-4">
+        <>
+            <div className="w-full max-w-2xl mx-auto p-4">
+                {taskId && (
+                    <div className="mb-4">
+                        <Button
+                            action={() => navigate('/dashboard')}
+                            classes="text-sm text-zinc-400 hover:text-white px-2 py-1 inline-flex items-center gap-2"
+                            options={{ overrideClasses: true }}
+                        >
+                            <ArrowLeft className="w-4 h-4" />
+                            Back to all tasks
+                        </Button>
+                    </div>
+                )}
+                <h1 className="text-2xl font-semibold mb-1">
+                    {parentTask ? parentTask.title : 'Your Tasks'}
+                </h1>
+                {parentTask && <p className="text-sm text-zinc-500 mb-6">Subtasks for this task</p>}
+
+                <div className="flex items-center gap-2 mb-4">
+                    <input
+                        type="text"
+                        placeholder={parentTask ? 'Add a subtask...' : 'Add a new task'}
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={handleSubmitOnEnter}
+                        className="flex-1 px-4 py-2 rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 placeholder-gray-500 dark:placeholder-gray-400"
+                    />
+                    <Button action={handleAddTask}>
+                        <PlusCircle className="w-4 h-4 mr-2" />
+                        Add
+                    </Button>
                     <Button
-                        action={() => navigate('/dashboard')}
-                        classes="text-sm text-zinc-400 hover:text-white px-2 py-1 inline-flex items-center gap-2"
-                        options={{ overrideClasses: true }}
+                        action={handleGenerateTasks}
+                        classes={input.trim() ? activeGenerateButton : disabledGenerateButton}
                     >
-                        <ArrowLeft className="w-4 h-4" />
-                        Back to all tasks
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Generate
                     </Button>
                 </div>
-            )}
-            <h1 className="text-2xl font-semibold mb-1">
-                {parentTask ? parentTask.title : 'Your Tasks'}
-            </h1>
-            {parentTask && <p className="text-sm text-zinc-500 mb-6">Subtasks for this task</p>}
 
-            <div className="flex items-center gap-2 mb-4">
-                <input
-                    type="text"
-                    placeholder={parentTask ? 'Add a subtask...' : 'Add a new task'}
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={handleSubmitOnEnter}
-                    className="flex-1 px-4 py-2 rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 placeholder-gray-500 dark:placeholder-gray-400"
-                />
-                <Button action={handleAddTask}>
-                    <PlusCircle className="w-4 h-4 mr-2" />
-                    Add
-                </Button>
-                <Button
-                    action={handleGenerateTasks}
-                    classes={input.trim() ? activeGenerateButton : disabledGenerateButton}
-                >
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Generate
-                </Button>
+                {!taskId && (
+                    <div className="flex gap-2 mb-4">
+                        <TabButton
+                            name="All"
+                            isActive={isTabActive('all')}
+                            action={() => setView('all')}
+                        />
+                        <TabButton
+                            name="Active"
+                            isActive={isTabActive('active')}
+                            action={() => setView('active')}
+                        />
+                        <TabButton
+                            name="Completed"
+                            isActive={isTabActive('completed')}
+                            action={() => setView('completed')}
+                        />
+                    </div>
+                )}
+
+                {isGenerating ? (
+                    <GeneratingIndicator />
+                ) : (
+                    <TaskList tasks={tasksToShow} allTasks={state.tasks} />
+                )}
             </div>
-
-            {!taskId && (
-                <div className="flex gap-2 mb-4">
-                    <TabButton
-                        name="All"
-                        isActive={isTabActive('all')}
-                        action={() => setView('all')}
-                    />
-                    <TabButton
-                        name="Active"
-                        isActive={isTabActive('active')}
-                        action={() => setView('active')}
-                    />
-                    <TabButton
-                        name="Completed"
-                        isActive={isTabActive('completed')}
-                        action={() => setView('completed')}
-                    />
-                </div>
-            )}
-
-            {isGenerating ? (
-                <GeneratingIndicator />
-            ) : (
-                <TaskList tasks={tasksToShow} allTasks={state.tasks} />
-            )}
-        </div>
+            {/* {sharePromptPeerId && (
+                <TaskShareModal
+                    peerId={sharePromptPeerId}
+                    onAccept={handleAcceptShare}
+                    onDecline={handleDeclineShare}
+                />
+            )} */}
+        </>
     );
 }
