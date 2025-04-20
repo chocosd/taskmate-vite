@@ -1,6 +1,6 @@
 import ThemeToggle from '@components/ThemeToggle';
 import Logo from '@components/ui/Logo';
-import { useAuth } from '@hooks/useAuth.hooks';
+import { useAuth } from '@context/auth/useAuth';
 import { Routes } from '@routes/routes.enum';
 import { Bell, UserCircle2 } from 'lucide-react';
 import { useEffect } from 'react';

@@ -2,7 +2,7 @@ import { ToastType } from '@enums/toast-type.enum';
 import { invokeIfFn } from '@utils/functions/invoke-if-fn';
 import { isBrowser } from '@utils/functions/is-browser';
 import { useEffect, useState } from 'react';
-import { useToast } from './useToast.hooks';
+import { useToast } from '../context/toast/useToast';
 
 type InitialValue<T> = T | (() => T);
 type LocalStorageState<T = unknown> = readonly [T, React.Dispatch<React.SetStateAction<T>>];

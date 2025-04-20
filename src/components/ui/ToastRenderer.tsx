@@ -1,5 +1,5 @@
+import { useToast } from '@context/toast/useToast';
 import { ToastType } from '@enums/toast-type.enum';
-import { useToast } from '@hooks/useToast.hooks';
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Button from './Button';

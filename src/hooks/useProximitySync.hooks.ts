@@ -1,9 +1,9 @@
 import { ChannelMessageType } from '@enums/channel-message-type.enum';
-import { ChannelMessage, PositionUpdateChannelMessage } from '@models/channel-message';
+import { ChannelMessage, PositionUpdateChannelMessage } from '@models/channel-message.model';
 import { distinctUntilObjectChanged } from '@utils/distinct-until-object-changed';
 import { calculateProximity, getMyWindowPosition, WindowPosition } from '@utils/position';
 import { useEffect, useRef } from 'react';
-import { useSharedWindow } from './useSharedWindow.hooks';
+import { useSharedWindow } from '../context/shared-window/useSharedWindow';
 
 const THRESHOLD = 0.92;
 

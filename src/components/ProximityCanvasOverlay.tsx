@@ -1,5 +1,5 @@
+import { useSharedWindow } from '@context/shared-window/useSharedWindow';
 import { useProximitySync } from '@hooks/useProximitySync.hooks';
-import { useSharedWindow } from '@hooks/useSharedWindow.hooks';
 import { useEffect, useRef } from 'react';
 
 export default function ProximityCanvasOverlay() {

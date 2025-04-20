@@ -1,11 +1,10 @@
-import { Task } from '@models/task';
-import { TaskActionTypes } from '@state/task/enums/task-state.enum';
+import { useSupabaseTasks } from '@context/supabase-tasks/useSupabaseTasks';
+import { Task } from '@models/task.model';
 import { reorderTasksList } from '@utils/drag-task';
 import { useRef, useState } from 'react';
-import { useTasks } from './useTasks.hooks';
 
 export function useTaskDragAndReorder(tasks: Task[]) {
-    const { dispatch } = useTasks();
+    const { reorderTasks } = useSupabaseTasks();
     const [draggingId, setDraggingId] = useState<string | null>(null);
     const dragItem = useRef<Task | null>(null);
 
@@ -17,10 +16,15 @@ export function useTaskDragAndReorder(tasks: Task[]) {
     const onDragOver = (e: React.DragEvent, overTask: Task) => {
         e.preventDefault();
         const from = dragItem.current;
-        if (!from || from.id === overTask.id) return;
+
+        console.log(overTask, from);
+
+        if (!from || from.id === overTask.id) {
+            return;
+        }
 
         const reordered = reorderTasksList(tasks, from.id, overTask.id);
-        dispatch({ type: TaskActionTypes.ReorderTasks, payload: reordered });
+        reorderTasks(reordered);
     };
 
     const onDrop = () => {

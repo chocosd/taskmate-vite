@@ -1,9 +1,9 @@
 import ProximityCanvasOverlay from '@components/ProximityCanvasOverlay.tsx';
 import ToastRenderer from '@components/ui/ToastRenderer.tsx';
-import AuthProvider from '@context/AuthProvider.tsx';
-import { SharedWindowProvider } from '@context/SharedWindowProvider.tsx';
-import ThemeProvider from '@context/ThemeProvider.tsx';
-import { ToastProvider } from '@context/ToastProvider.tsx';
+import AuthProvider from '@context/auth/AuthProvider.tsx';
+import { SharedWindowProvider } from '@context/shared-window/SharedWindowProvider.tsx';
+import ThemeProvider from '@context/theme/ThemeProvider.tsx';
+import { ToastProvider } from '@context/toast/ToastProvider.tsx';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';

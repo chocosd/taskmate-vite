@@ -18,7 +18,7 @@ export function taskReducer(state: TaskState, action: TaskAction): TaskState {
                         createdAt: Date.now(),
                         generated: action.payload.generated ?? false,
                         order: action.payload.order,
-                        ...(action.payload.parentId && { parentId: action.payload.parentId }),
+                        ...(action.payload.parent_id && { parent_id: action.payload.parent_id }),
                     },
                     ...state.tasks,
                 ],

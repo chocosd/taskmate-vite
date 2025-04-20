@@ -1,4 +1,4 @@
-import { type Task } from '@models/task';
+import { type Task } from '@models/task.model';
 import { TaskActionTypes } from '../enums/task-state.enum';
 
 export type TaskState = {
@@ -11,7 +11,7 @@ export interface BaseTaskAction {
 
 export interface AddTaskAction extends BaseTaskAction {
     type: TaskActionTypes.AddTask;
-    payload: { title: string; generated?: boolean; order: number; parentId?: string };
+    payload: { title: string; generated?: boolean; order: number; parent_id?: string };
 }
 
 export interface AssignTaskAction extends BaseTaskAction {

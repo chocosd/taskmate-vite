@@ -1,4 +1,4 @@
-import { useTheme } from '@hooks/useTheme.hooks';
+import { useTheme } from '@context/theme/useTheme';
 import { isNumber } from '@utils/functions/is-number';
 
 type LogoSize = {

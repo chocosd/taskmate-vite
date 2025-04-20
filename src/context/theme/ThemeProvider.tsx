@@ -1,13 +1,7 @@
 import { isBrowser } from '@utils/functions/is-browser';
-import { createContext, useEffect, useState } from 'react';
-
-type Theme = 'light' | 'dark';
-type ThemeContextType = {
-    theme: Theme;
-    toggleTheme: () => void;
-};
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+import { useEffect, useState } from 'react';
+import { Theme } from './theme-context.model';
+import { ThemeContext } from './theme.context';
 
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
     const getInitialTheme = (): Theme => {
@@ -32,5 +26,3 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
 
     return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>;
 }
-
-export { ThemeContext };

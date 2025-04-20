@@ -1,7 +1,7 @@
 import { ChannelMessageType } from '@enums/channel-message-type.enum';
 import { WindowPosition } from '@utils/position';
-import { Dictionary } from './dictionary';
-import { Task } from './task';
+import { Dictionary } from './dictionary.model';
+import { Task } from './task.model';
 
 type BaseChannelMessage = {
     type: ChannelMessageType;

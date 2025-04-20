@@ -1,4 +1,4 @@
-import { Task } from '@models/task';
+import { Task } from '@models/task.model';
 
 export function reorderTasksList(tasks: Task[], fromId: string, toId: string): Task[] {
     const fromIndex = tasks.findIndex((t) => t.id === fromId);
