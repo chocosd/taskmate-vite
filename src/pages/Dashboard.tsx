@@ -1,10 +1,10 @@
-import TaskProvider from '@context/TasksProvider';
+import { SupabaseTasksProvider } from '@context/supabase-tasks/SupabaseTasksProvider';
 import { Outlet } from 'react-router-dom';
 
 export default function Dashboard() {
     return (
-        <TaskProvider>
+        <SupabaseTasksProvider>
             <Outlet />
-        </TaskProvider>
+        </SupabaseTasksProvider>
     );
 }

@@ -1,5 +1,7 @@
 import ThemeToggle from '@components/ThemeToggle';
-import { useAuth } from '@hooks/useAuth.hooks';
+import { useAuth } from '@context/auth/useAuth';
+import { useToast } from '@context/toast/useToast';
+import { ToastType } from '@enums/toast-type.enum';
 import { Routes } from '@routes/routes.enum';
 import Button from '@ui/Button';
 import Logo from '@ui/Logo';
@@ -8,10 +10,13 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function Login() {
     const { login } = useAuth();
+    const { showToast } = useToast();
     const navigate = useNavigate();
     const location = useLocation();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const from = location.state?.from?.pathname ?? `/${Routes.Dashboard}`;
 
@@ -22,13 +27,20 @@ export default function Login() {
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
     };
-    
-    const handleSubmit = (e: FormEvent) => {
-      e.preventDefault();
-      login(email);
-      navigate(from, { replace: true });
+
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+
+        try {
+            await login(email, password);
+            navigate(from, { replace: true });
+        } catch (err: unknown) {
+            showToast(ToastType.Error, `err.message || 'Check your credentials.': ${err}`);
+        } finally {
+            setIsLoading(false);
+        }
     };
-    
 
     return (
         <div className="min-h-screen flex flex-col md:flex-row bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-white">
@@ -64,7 +76,7 @@ export default function Login() {
                             onChange={handlePasswordChange}
                             className="w-full px-4 py-2 rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 placeholder-gray-500 dark:placeholder-gray-400"
                         />
-                        <Button name="Login" type="submit" />
+                        <Button name={isLoading ? 'Logging in...' : 'Login'} type="submit" />
                     </form>
                 </div>
             </div>

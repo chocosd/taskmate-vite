@@ -1,8 +1,7 @@
+import { useSupabaseTasks } from '@context/supabase-tasks/useSupabaseTasks';
+import { useToast } from '@context/toast/useToast';
 import { ToastType } from '@enums/toast-type.enum';
-import { useTasks } from '@hooks/useTasks.hooks';
-import { useToast } from '@hooks/useToast.hooks';
-import { Task } from '@models/task';
-import { TaskActionTypes } from '@state/task/enums/task-state.enum';
+import { Task } from '@models/task.model';
 import { aiBadge, taskStyles } from '@styles/taskClassNames';
 import GeneratingIndicator from '@ui/GeneratingIndicator';
 import Modal from '@ui/Modal';
@@ -27,7 +26,7 @@ export default function TaskItem({
     onDrop,
     isDragging = false,
 }: TaskItemProps) {
-    const { dispatch } = useTasks();
+    const { toggleTask, addTask, deleteTask } = useSupabaseTasks();
     const { showToast } = useToast();
 
     const [isSubtaskInputOpen, setSubtaskInputOpen] = useState(false);
@@ -69,20 +68,17 @@ export default function TaskItem({
         setSubtaskInputOpen(true);
     };
 
-    const handleTaskToggleOnChange = () =>
-        dispatch({ type: TaskActionTypes.ToggleTask, payload: { id: task.id } });
+    const handleTaskToggleOnChange = () => toggleTask(task.id);
 
     const handleTaskDeleteOnChange = () => {
         if (task.subtasks?.length) {
             setShowConfirmModal(true);
         } else {
-            dispatch({ type: TaskActionTypes.DeleteTask, payload: { id: task.id } });
+            deleteTask(task.id);
         }
     };
 
-    const confirmDelete = () => {
-        dispatch({ type: TaskActionTypes.DeleteTask, payload: { id: task.id } });
-    };
+    const confirmDelete = () => deleteTask(task.id);
 
     const handleAiSubtask = async () => {
         setIsGeneratingSubtasks(true);
@@ -93,14 +89,11 @@ export default function TaskItem({
             const results = await generateTasksFromPrompt(prompt);
 
             results.forEach((title, index) => {
-                dispatch({
-                    type: TaskActionTypes.AddTask,
-                    payload: {
-                        title,
-                        generated: true,
-                        parentId: task.id,
-                        order: index,
-                    },
+                addTask({
+                    title,
+                    generated: true,
+                    parent_id: task.id,
+                    order: index,
                 });
             });
         } catch (err) {
@@ -112,13 +105,10 @@ export default function TaskItem({
 
     const handleSubtaskInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
-            dispatch({
-                type: TaskActionTypes.AddTask,
-                payload: {
-                    title: e.currentTarget.value,
-                    parentId: task.id,
-                    order: 0,
-                },
+            addTask({
+                title: e.currentTarget.value,
+                parent_id: task.id,
+                order: 0,
             });
             setSubtaskInputOpen(false);
         }

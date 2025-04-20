@@ -1,5 +1,5 @@
-import { SharedWindowContext } from '@context/SharedWindowProvider';
 import { useContext } from 'react';
+import { SharedWindowContext } from './shared-window.context';
 
 export function useSharedWindow() {
     const context = useContext(SharedWindowContext);
