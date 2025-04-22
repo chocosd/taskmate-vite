@@ -3,4 +3,5 @@ export enum Routes {
     Login = 'login',
     Dashboard = 'dashboard',
     Settings = 'settings',
+    Profile = 'profile',
 }

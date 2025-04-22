@@ -3,12 +3,19 @@ import { useEffect, useState } from 'react';
 import { Theme } from './theme-context.model';
 import { ThemeContext } from './theme.context';
 
-export default function ThemeProvider({ children }: { children: React.ReactNode }) {
+export default function ThemeProvider({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
     const getInitialTheme = (): Theme => {
         if (!isBrowser()) return 'light';
         const stored = localStorage.getItem('theme');
         if (stored) return JSON.parse(stored);
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        return window.matchMedia('(prefers-color-scheme: dark)')
+            .matches
+            ? 'dark'
+            : 'light';
     };
 
     const [theme, setTheme] = useState<Theme>(getInitialTheme);
@@ -24,5 +31,9 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
         setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
     };
 
-    return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>;
+    return (
+        <ThemeContext.Provider value={{ theme, toggleTheme }}>
+            {children}
+        </ThemeContext.Provider>
+    );
 }

@@ -5,7 +5,9 @@ export function useSharedWindow() {
     const context = useContext(SharedWindowContext);
 
     if (!context) {
-        throw new Error('useSharedWindow must be used within a SharedWindowProvider');
+        throw new Error(
+            'useSharedWindow must be used within a SharedWindowProvider'
+        );
     }
 
     return context;

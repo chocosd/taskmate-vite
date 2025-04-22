@@ -3,6 +3,7 @@ import Root from '@layouts/Root';
 import About from '@pages/About';
 import Dashboard from '@pages/Dashboard';
 import Login from '@pages/Login';
+import Profile from '@pages/Profile';
 import ProtectedRoute from '@routes/ProtectedRoute';
 import { Routes } from '@routes/routes.enum';
 import { createBrowserRouter, createRoutesFromElements, Navigate, Route } from 'react-router-dom';
@@ -20,6 +21,7 @@ export const router = createBrowserRouter(
                     <Route path=":taskId" element={<TaskView />} />
                 </Route>
             </Route>
+            <Route path={Routes.Profile} element={<Profile/>}/>
         </Route>
     )
 );
