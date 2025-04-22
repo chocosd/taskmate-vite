@@ -116,8 +116,6 @@ export function useProximitySync() {
 
         registerMessageHandler(handleMessage);
 
-        console.log('[ProximitySync] Registered handler');
-
         return () => clearInterval(interval);
     }, [myId, registerMessageHandler, sendChannelMessage, triggerSharePrompt, updateProximity]);
 }

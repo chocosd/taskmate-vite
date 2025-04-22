@@ -21,8 +21,6 @@ export default function ProximityCanvasOverlay() {
             canvas.height = window.innerHeight;
         };
 
-        console.log(proximity);
-
         const draw = () => {
             if (!ctx || !proximity) {
                 return;

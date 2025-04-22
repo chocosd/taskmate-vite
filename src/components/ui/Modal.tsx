@@ -1,6 +1,12 @@
 import { ReactNode } from 'react';
 import Button from './Button';
 
+export type ButtonActions<T = unknown> = {
+    name: string;
+    action: (prop?: T) => void,
+    modifierClasses?: string
+}
+
 type ModalProps = {
     isOpen: boolean;
     onClose: () => void;
@@ -8,6 +14,7 @@ type ModalProps = {
     children: ReactNode;
     confirmLabel?: string;
     onConfirm?: () => void;
+    additionalActions?: ButtonActions[];
 };
 
 export default function Modal({
@@ -17,6 +24,7 @@ export default function Modal({
     children,
     confirmLabel = 'Confirm',
     onConfirm,
+    additionalActions
 }: ModalProps) {
     if (!isOpen) {
         return null;
@@ -33,6 +41,14 @@ export default function Modal({
                         classes="px-4 py-1 rounded bg-zinc-700 hover:bg-zinc-600 text-sm"
                         name="Cancel"
                     />
+                    {additionalActions?.map((action, i) => 
+                        <Button
+                            key={action.name + i}
+                            action={action.action}
+                            name={action.name}
+                            classes={`px-4 py-1 rounded ${action.modifierClasses} text-sm`}
+                        />
+                    )}
                     <Button
                         action={() => {
                             onConfirm?.();

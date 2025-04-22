@@ -4,14 +4,25 @@ import { useEffect, useRef, useState } from 'react';
 import { ProximityUpdater } from './shared-window-context.model';
 import { SharedWindowContext } from './shared-window.context';
 
-
-export function SharedWindowProvider({ children }: { children: React.ReactNode }) {
-    const [proximity, setProximity] = useState<ProximityData | null>(null);
-    const [sharePromptPeerId, setSharePromptPeerId] = useState<string | null>(null);
+export function SharedWindowProvider({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
+    const [proximity, setProximity] = useState<ProximityData | null>(
+        null
+    );
+    const [sharePromptPeerId, setSharePromptPeerId] = useState<
+        string | null
+    >(null);
     const [myId] = useState(() => crypto.randomUUID());
 
-    const channelRef = useRef(new BroadcastChannel('taskmate-proximity'));
-    const handlersRef = useRef<((data: ChannelMessage) => void)[]>([]);
+    const channelRef = useRef(
+        new BroadcastChannel('taskmate-proximity')
+    );
+    const handlersRef = useRef<((data: ChannelMessage) => void)[]>(
+        []
+    );
 
     useEffect(() => {
         const channel = channelRef.current;
@@ -26,16 +37,21 @@ export function SharedWindowProvider({ children }: { children: React.ReactNode }
         channelRef.current.postMessage(message);
     };
 
-    const registerMessageHandler = (handler: (data: ChannelMessage) => void) => {
+    const registerMessageHandler = (
+        handler: (data: ChannelMessage) => void
+    ) => {
         if (!handlersRef.current.includes(handler)) {
             handlersRef.current.push(handler);
         }
     };
 
-    const triggerSharePrompt = (peerId: string | null) => setSharePromptPeerId(peerId);
+    const triggerSharePrompt = (peerId: string | null) =>
+        setSharePromptPeerId(peerId);
 
     const updateProximity = (update: ProximityUpdater) => {
-        setProximity((prev) => (typeof update === 'function' ? update(prev) : update));
+        setProximity((prev) =>
+            typeof update === 'function' ? update(prev) : update
+        );
     };
 
     return (

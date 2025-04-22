@@ -3,7 +3,11 @@ import { useState } from 'react';
 import { Toast } from './toast-context.model';
 import { ToastContext } from './toast.context';
 
-export function ToastProvider({ children }: { children: React.ReactNode }) {
+export function ToastProvider({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
     const [toasts, setToasts] = useState<Toast[]>([]);
 
     const showToast = (type: ToastType, message: string) => {
@@ -18,7 +22,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <ToastContext.Provider value={{ toasts, showToast, dismissToast }}>
+        <ToastContext.Provider
+            value={{ toasts, showToast, dismissToast }}
+        >
             {children}
         </ToastContext.Provider>
     );

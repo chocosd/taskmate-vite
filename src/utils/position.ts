@@ -34,8 +34,5 @@ export function calculateProximity(myPos: WindowPosition, otherPos: WindowPositi
     )[0] as ProximityData['edge'];
     const intensity = Math.min(1, distances[edge] / threshold);
 
-    console.log('[Proximity] Distances:', distances);
-    console.log('[Proximity] Closest edge:', edge, '→', distances[edge]);
-
     return { edge, intensity };
 }

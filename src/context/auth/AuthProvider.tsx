@@ -5,15 +5,18 @@ import { AuthContext } from './auth.context';
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const getSession = async () => {
-            const { data } = await supabase.auth.getSession();
+            const { data, error } = await supabase.auth.getSession();
             setUser(data.session?.user ?? null);
+            setLoading(false);
         };
 
         const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
             setUser(session?.user ?? null);
+            setLoading(false);
         });
 
         getSession();
@@ -35,5 +38,13 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         setUser(null);
     };
 
-    return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>;
+    if (loading) {
+        return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    }
+
+    return (
+        <AuthContext.Provider value={{ user, login, logout }}>
+            {children}
+        </AuthContext.Provider>
+    );
 }

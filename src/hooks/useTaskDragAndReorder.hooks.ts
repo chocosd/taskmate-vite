@@ -17,8 +17,6 @@ export function useTaskDragAndReorder(tasks: Task[]) {
         e.preventDefault();
         const from = dragItem.current;
 
-        console.log(overTask, from);
-
         if (!from || from.id === overTask.id) {
             return;
         }
