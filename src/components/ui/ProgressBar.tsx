@@ -7,7 +7,10 @@ type ProgressBarProps = {
     onView?: () => void;
 };
 
-export default function ProgressBar({ subtasks, onView }: ProgressBarProps) {
+export default function ProgressBar({
+    subtasks,
+    onView,
+}: ProgressBarProps) {
     if (!subtasks.length) {
         return null;
     }
@@ -18,20 +21,29 @@ export default function ProgressBar({ subtasks, onView }: ProgressBarProps) {
         [TaskStatus.Manual]: 'bg-blue-500',
     };
 
-    const complete = subtasks.filter((s) => s === TaskStatus.Completed).length;
+    const complete = subtasks.filter(
+        (s) => s === TaskStatus.Completed
+    ).length;
 
     return (
         <div className="mt-2 w-full flex flex-col gap-1">
             <div className="w-full flex items-center justify-between">
                 {onView && (
-                    <Button action={onView} classes="mr-3" size="small">
+                    <Button
+                        action={onView}
+                        classes="mr-3"
+                        size="small"
+                    >
                         <Eye className="w-3 h-3" />
                     </Button>
                 )}
 
                 <div className="flex-1 h-2 gap-1 rounded-md bg-white/10 overflow-hidden flex">
                     {subtasks.map((status, i) => (
-                        <div key={i} className={`flex-1 ${statusToColor[status]}`} />
+                        <div
+                            key={i}
+                            className={`flex-1 ${statusToColor[status]}`}
+                        />
                     ))}
                 </div>
             </div>

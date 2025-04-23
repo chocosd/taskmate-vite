@@ -1,6 +1,10 @@
 import { Task } from '@models/task.model';
 
-export function reorderTasksList(tasks: Task[], fromId: string, toId: string): Task[] {
+export function reorderTasksList(
+    tasks: Task[],
+    fromId: string,
+    toId: string
+): Task[] {
     const fromIndex = tasks.findIndex((t) => t.id === fromId);
     const toIndex = tasks.findIndex((t) => t.id === toId);
     if (fromIndex === -1 || toIndex === -1) return tasks;

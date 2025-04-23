@@ -9,7 +9,8 @@ type TaskListProps = {
 };
 
 export default function TaskList({ tasks, allTasks }: TaskListProps) {
-    const { draggingId, onDragStart, onDragOver, onDrop } = useTaskDragAndReorder(tasks);
+    const { draggingId, onDragStart, onDragOver, onDrop } =
+        useTaskDragAndReorder(tasks);
 
     const availableTasks = tasks.length;
 

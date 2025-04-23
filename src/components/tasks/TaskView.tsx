@@ -1,105 +1,110 @@
+import { AutocompleteOption } from '@components/forms/fields/AutocompleteInput';
+import { FormFieldType } from '@components/forms/form-field-types.enum';
+import { FormField } from '@components/forms/form-types.model';
+import FormModal from '@components/ui/FormModal';
 import { useSupabaseTasks } from '@context/supabase-tasks/useSupabaseTasks';
-import { useToast } from '@context/toast/useToast';
-import { ToastType } from '@enums/toast-type.enum';
-import { Task } from '@models/task.model';
-import { activeGenerateButton, disabledGenerateButton } from '@styles/taskClassNames';
 import Button from '@ui/Button';
 import GeneratingIndicator from '@ui/GeneratingIndicator';
 import TabButton from '@ui/TabButton';
-import { generateTasksFromPrompt } from '@utils/generate-tasks-from-prompt';
-import { ArrowLeft, PlusCircle, Sparkles } from 'lucide-react';
-import { DateTime } from 'luxon';
+import {
+    ArrowLeft
+} from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import TaskInputBar from './TaskInputBar';
 import TaskList from './TaskList';
 
-type TaskListView = 'active' | 'completed' | 'all';
+type TaskListView = 'active' | 'completed' | 'all' | 'created';
 
 export default function TaskView() {
     const { taskId } = useParams<{ taskId: string }>();
     const navigate = useNavigate();
-    const { showToast } = useToast();
-    const [input, setInput] = useState('');
+
     const [view, setView] = useState<TaskListView>('all');
     const [isGenerating, setIsGenerating] = useState(false);
 
-    const { tasks, loading, addTask, addTasksBatch } = useSupabaseTasks();
+    const {
+        connections,
+        tasks,
+        createdTasks,
+        loading,
+        isOptionsOpen,
+        closeOptions,
+        setOptionsData,
+        optionsData
+    } = useSupabaseTasks();
 
     const parentTask = tasks.find((t) => t.id === taskId);
 
-    const handleAddTask = async () => {
-        if (!input.trim()) {
-            return;
-        }
-
-        try {
-            await addTask({
-                title: input.trim(),
-                order: tasks.length + 1,
-                parent_id: taskId ?? undefined,
-                generated: false,
-            });
-
-            setInput('');
-        } catch (err) {
-            showToast(ToastType.Error, `Failed to add task: ${err}`);
-        }
-    };
-
-    const handleGenerateTasks = async () => {
-        if (!input.trim()) return;
-
-        setIsGenerating(true);
-
-        try {
-            const aiTasks = await generateTasksFromPrompt(input.trim());
-
-            const now = DateTime.now().toISO();
-            const baseOrder = tasks.length;
-            const newTasks: Task[] = aiTasks.map((title, i) => ({
-                title,
-                completed: false,
-                order: baseOrder + i,
-                generated: true,
-                parent_id: taskId ?? undefined,
-                created_at: now,
-            })) as Task[];
-
-            await addTasksBatch(newTasks);
-
-            setInput('');
-        } catch (err) {
-            showToast(ToastType.Error, `AI generation failed: ${err}`);
-        } finally {
-            setIsGenerating(false);
-        }
-    };
-
-    const handleSubmitOnEnter = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            handleAddTask();
-        }
-    };
-
     const isTabActive = (taskView: TaskListView) => taskView === view;
 
-    const tasksToShow = tasks
-        .filter((task) => {
-            if (taskId) {
-                return task.parent_id === taskId;
-            }
+    const tasksToShow = (
+        isTabActive('created')
+            ? createdTasks
+            : tasks.filter((task) => {
+                  if (taskId) {
+                      return task.parent_id === taskId;
+                  }
 
-            if (view === 'active') {
-                return !task.completed && !task.parent_id;
-            }
-            if (view === 'completed') {
-                return task.completed && !task.parent_id;
-            }
+                  if (view === 'active') {
+                      return !task.completed && !task.parent_id;
+                  }
+                  if (view === 'completed') {
+                      return task.completed && !task.parent_id;
+                  }
 
-            return !task.parent_id;
-        })
-        .sort((a, b) => a.order - b.order);
+                  return !task.parent_id;
+              })
+    ).sort((a, b) => a.order - b.order);
+
+    const optionFields: FormField[] = [
+        {
+            type: FormFieldType.AUTOCOMPLETE,
+            name: 'assignee',
+            label: 'Assign To',
+            config: {
+                loadOptions: (search: string) =>
+                    Promise.resolve(
+                        connections
+                            .filter((conn) =>
+                                conn.connection_email
+                                    ?.toLowerCase()
+                                    .includes(search.toLowerCase())
+                            )
+                            .map(
+                                ({connection_email, connection_id}) =>
+                                    ({
+                                        label: connection_email,
+                                        value: connection_id,
+                                    }) as AutocompleteOption
+                            )
+                    ),
+            },
+        },
+        {
+            type: FormFieldType.DATETIME,
+            name: 'due_date',
+            label: 'Due Date',
+        },
+        {
+            type: FormFieldType.RADIO,
+            name: 'priority',
+            label: 'Priority',
+            options: [
+                { label: 'Low', value: 'low' },
+                { label: 'Medium', value: 'medium' },
+                { label: 'High', value: 'high' },
+            ],
+        },
+    ];
+
+    const handleOptionsSubmit = (data?: Record<string, unknown>) => {
+        if (!data) {
+            return;
+        }
+        
+        console.log(data);
+    };
 
     return (
         <div className="w-full max-w-2xl mx-auto p-4">
@@ -118,29 +123,13 @@ export default function TaskView() {
             <h1 className="text-2xl font-semibold mb-1">
                 {parentTask ? parentTask.title : 'Your Tasks'}
             </h1>
-            {parentTask && <p className="text-sm text-zinc-500 mb-6">Subtasks for this task</p>}
+            {parentTask && (
+                <p className="text-sm text-zinc-500 mb-6">
+                    Subtasks for this task
+                </p>
+            )}
 
-            <div className="flex items-center gap-2 mb-4">
-                <input
-                    type="text"
-                    placeholder={parentTask ? 'Add a subtask...' : 'Add a new task'}
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={handleSubmitOnEnter}
-                    className="flex-1 px-4 py-2 rounded border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 placeholder-gray-500 dark:placeholder-gray-400"
-                />
-                <Button action={handleAddTask}>
-                    <PlusCircle className="w-4 h-4 mr-2" />
-                    Add
-                </Button>
-                <Button
-                    action={handleGenerateTasks}
-                    classes={input.trim() ? activeGenerateButton : disabledGenerateButton}
-                >
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Generate
-                </Button>
-            </div>
+            <TaskInputBar setIsGenerating={setIsGenerating}/>
 
             {!taskId && (
                 <div className="flex gap-2 mb-4">
@@ -159,14 +148,32 @@ export default function TaskView() {
                         isActive={isTabActive('completed')}
                         action={() => setView('completed')}
                     />
+                    <TabButton
+                        name="Created"
+                        isActive={isTabActive('created')}
+                        action={() => setView('created')}
+                    />
                 </div>
             )}
-
             {loading || isGenerating ? (
                 <GeneratingIndicator />
             ) : (
                 <TaskList tasks={tasksToShow} allTasks={tasks} />
             )}
+
+            <FormModal
+                title="Task Options"
+                isOpen={isOptionsOpen}
+                fields={optionFields}
+                updateModel={setOptionsData}
+                model={optionsData}
+
+                onClose={() => closeOptions()}
+                onSubmit={() => {
+                    handleOptionsSubmit(optionsData);
+                    closeOptions();
+                }}
+            />
         </div>
     );
 }

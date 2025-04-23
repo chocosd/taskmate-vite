@@ -26,21 +26,33 @@ export default function TaskItem({
     onDrop,
     isDragging = false,
 }: TaskItemProps) {
-    const { renameTask, updateSubtaskTitles, deleteSubTasks, deleteTaskWithSubtasks, toggleTask, addTask, deleteTask } = useSupabaseTasks();
+    const {
+        renameTask,
+        updateSubtaskTitles,
+        deleteSubTasks,
+        deleteTaskWithSubtasks,
+        toggleTask,
+        addTask,
+        deleteTask,
+    } = useSupabaseTasks();
     const { showToast } = useToast();
 
     const [isSubtaskInputOpen, setSubtaskInputOpen] = useState(false);
     const [dragClass, setDragClass] = useState('');
-    const [isGeneratingSubtasks, setIsGeneratingSubtasks] = useState(false);
-    const [isGeneratingSubtasksInModal, setIsGeneratingSubtasksInModal] = useState(false);
+    const [isGeneratingSubtasks, setIsGeneratingSubtasks] =
+        useState(false);
+    const [
+        isGeneratingSubtasksInModal,
+        setIsGeneratingSubtasksInModal,
+    ] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
-    const [pendingRenameTask, setPendingRenameTask] = useState<Task | null>(null);
+    const [pendingRenameTask, setPendingRenameTask] =
+        useState<Task | null>(null);
     const [pendingNewTitle, setPendingNewTitle] = useState('');
     const [showEditTitle, setShowEditTitle] = useState(false);
     const [inputTitle, setInputTitle] = useState(task.title);
-
 
     const navigate = useNavigate();
 
@@ -49,7 +61,8 @@ export default function TaskItem({
             let itemClasses: string = '';
 
             if (isDragging) {
-                itemClasses += 'opacity-50 border-zinc-300 dark:border-zinc-700';
+                itemClasses +=
+                    'opacity-50 border-zinc-300 dark:border-zinc-700';
             }
 
             return itemClasses;
@@ -86,32 +99,36 @@ export default function TaskItem({
         }
     };
 
-    const toggleRenameEdit = (e?: React.MouseEvent<HTMLButtonElement>) => {
+    const toggleRenameEdit = (
+        e?: React.MouseEvent<HTMLButtonElement>
+    ) => {
         e?.preventDefault();
 
         setShowEditTitle((prev) => !prev);
-    }
+    };
 
-    const handleRenameAttempt = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleRenameAttempt = (
+        e: React.KeyboardEvent<HTMLInputElement>
+    ) => {
         if (e.key !== 'Enter') {
             return;
         }
 
-        const newTitle = (e.target as unknown as { value: string }).value;
+        const newTitle = (e.target as unknown as { value: string })
+            .value;
 
         console.log(newTitle);
 
         if (task.subtasks && !!task.subtasks.length) {
-          setPendingRenameTask(task);
-          setPendingNewTitle(newTitle);
-          setIsRenameModalOpen(true);
-          return;
+            setPendingRenameTask(task);
+            setPendingNewTitle(newTitle);
+            setIsRenameModalOpen(true);
+            return;
         }
-        
+
         renameTask(task.id, newTitle);
         toggleRenameEdit();
-      }
-      
+    };
 
     const confirmDelete = () => deleteTaskWithSubtasks(task.id);
 
@@ -138,7 +155,10 @@ export default function TaskItem({
                 });
             });
         } catch (err) {
-            showToast(ToastType.Error, `Subtask AI generation failed: ${err}`);
+            showToast(
+                ToastType.Error,
+                `Subtask AI generation failed: ${err}`
+            );
         } finally {
             setIsGeneratingSubtasks(false);
         }
@@ -147,23 +167,26 @@ export default function TaskItem({
     const updateAiSubtaskTitles = async () => {
         setIsGeneratingSubtasksInModal(true);
         confirmRenameTask();
-    
+
         try {
             const prompt = `${import.meta.env.VITE_AI_SYSTEM_SUB_RE_PROMPT.replace('{}', task.subtasks!.length + 1)} "${pendingNewTitle}"`;
-    
+
             const results = await generateTasksFromPrompt(prompt);
-    
+
             await updateSubtaskTitles(task.id, results);
         } catch (err) {
-            showToast(ToastType.Error, `Subtask AI generation failed: ${err}`);
+            showToast(
+                ToastType.Error,
+                `Subtask AI generation failed: ${err}`
+            );
         } finally {
             setIsGeneratingSubtasksInModal(false);
-
         }
     };
-    
 
-    const handleSubtaskInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleSubtaskInput = (
+        e: React.KeyboardEvent<HTMLInputElement>
+    ) => {
         if (e.key === 'Enter') {
             addTask({
                 title: e.currentTarget.value,
@@ -175,51 +198,47 @@ export default function TaskItem({
     };
 
     const confirmRenameTask = () => {
-
         const id = pendingRenameTask?.id;
 
         if (!id) {
             return;
         }
 
-        renameTask(
-            id,
-            pendingNewTitle
-        );
+        renameTask(id, pendingNewTitle);
         toggleRenameEdit();
-    }
+    };
 
     const renameModalActions: ButtonActions[] = [
         {
             name: 'Remove subtasks and re-generate',
             action: async () => {
-              await deleteSubTasks(task.id);
-              await handleAiSubtask(true);
-              confirmRenameTask();
-              setIsRenameModalOpen(false);
+                await deleteSubTasks(task.id);
+                await handleAiSubtask(true);
+                confirmRenameTask();
+                setIsRenameModalOpen(false);
             },
-          },
-          {
+        },
+        {
             name: 'Update subtask titles',
             action: async () => {
-              await updateAiSubtaskTitles();
-              setIsRenameModalOpen(false);
+                await updateAiSubtaskTitles();
+                setIsRenameModalOpen(false);
             },
-          },
+        },
     ];
 
-    const title = showEditTitle
-        ?   <input 
-                type='text'
-                placeholder="Edit Title..."
-                className="w-full px-3 py-1 text-sm rounded border border-zinc-700 dark:bg-zinc-900"
-                onKeyDown={handleRenameAttempt}
-                value={inputTitle}
-                onChange={(e) => setInputTitle(e.target.value)}
-            />
-        :   <span className="text-sm truncate">
-                {task.title}
-            </span>;
+    const title = showEditTitle ? (
+        <input
+            type="text"
+            placeholder="Edit Title..."
+            className="w-full px-3 py-1 text-sm rounded border border-zinc-700 dark:bg-zinc-900"
+            onKeyDown={handleRenameAttempt}
+            value={inputTitle}
+            onChange={(e) => setInputTitle(e.target.value)}
+        />
+    ) : (
+        <span className="text-sm truncate">{task.title}</span>
+    );
 
     return (
         <>
@@ -241,8 +260,10 @@ export default function TaskItem({
                             checked={task.completed}
                             onChange={handleTaskToggleOnChange}
                         />
-                        { title }
-                        {task.generated && <span className={aiBadge}>(AI)</span>}
+                        {title}
+                        {task.generated && (
+                            <span className={aiBadge}>(AI)</span>
+                        )}
                     </div>
 
                     <div
@@ -291,7 +312,9 @@ export default function TaskItem({
                     !!task.subtasks?.length && (
                         <ProgressBar
                             subtasks={task.subtasks}
-                            onView={() => navigate(`/dashboard/${task.id}`)}
+                            onView={() =>
+                                navigate(`/dashboard/${task.id}`)
+                            }
                         />
                     )
                 )}
@@ -310,21 +333,22 @@ export default function TaskItem({
                 onConfirm={confirmDelete}
                 title="Delete Task and Subtasks?"
             >
-                This task has {task.subtasks?.length} subtasks. Deleting it will also remove all
-                associated subtasks.
+                This task has {task.subtasks?.length} subtasks.
+                Deleting it will also remove all associated subtasks.
             </Modal>
             <Modal
                 isOpen={isRenameModalOpen}
                 onClose={() => setIsRenameModalOpen(false)}
                 additionalActions={renameModalActions}
                 onConfirm={confirmRenameTask}
-                confirmLabel='continue'
+                submitLabel="continue"
                 title="Rename Task"
             >
-                {isGeneratingSubtasksInModal 
-                    ? <GeneratingIndicator message="Updating subtasks from task..." />
-                    : `This task has ${task.subtasks?.length} subtasks. Renaming this may make these tasks redundant.`
-                }
+                {isGeneratingSubtasksInModal ? (
+                    <GeneratingIndicator message="Updating subtasks from task..." />
+                ) : (
+                    `This task has ${task.subtasks?.length} subtasks. Renaming this may make these tasks redundant.`
+                )}
             </Modal>
         </>
     );

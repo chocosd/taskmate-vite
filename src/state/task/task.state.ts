@@ -1,12 +1,18 @@
 import { nanoid } from 'nanoid';
 import { TaskActionTypes } from './enums/task-state.enum';
-import { type TaskAction, type TaskState } from './models/task-state.model';
+import {
+    type TaskAction,
+    type TaskState,
+} from './models/task-state.model';
 
 export const initialTaskState: TaskState = {
     tasks: [],
 };
 
-export function taskReducer(state: TaskState, action: TaskAction): TaskState {
+export function taskReducer(
+    state: TaskState,
+    action: TaskAction
+): TaskState {
     switch (action.type) {
         case TaskActionTypes.AddTask:
             return {
@@ -18,7 +24,9 @@ export function taskReducer(state: TaskState, action: TaskAction): TaskState {
                         createdAt: Date.now(),
                         generated: action.payload.generated ?? false,
                         order: action.payload.order,
-                        ...(action.payload.parent_id && { parent_id: action.payload.parent_id }),
+                        ...(action.payload.parent_id && {
+                            parent_id: action.payload.parent_id,
+                        }),
                     },
                     ...state.tasks,
                 ],
@@ -46,7 +54,9 @@ export function taskReducer(state: TaskState, action: TaskAction): TaskState {
 
         case TaskActionTypes.DeleteTask:
             return {
-                tasks: state.tasks.filter((task) => task.id !== action.payload.id),
+                tasks: state.tasks.filter(
+                    (task) => task.id !== action.payload.id
+                ),
             };
 
         case TaskActionTypes.ReorderTasks:

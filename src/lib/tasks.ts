@@ -16,7 +16,10 @@ export async function fetchTasks(userId: string): Promise<Task[]> {
 }
 
 export async function addTask(task: Partial<Task>) {
-    const { data, error } = await supabase.from('tasks').insert(task).single();
+    const { data, error } = await supabase
+        .from('tasks')
+        .insert(task)
+        .single();
     if (error) {
         throw error;
     }
@@ -25,7 +28,11 @@ export async function addTask(task: Partial<Task>) {
 }
 
 export async function updateTask(id: string, updates: Partial<Task>) {
-    const { data, error } = await supabase.from('tasks').update(updates).eq('id', id).single();
+    const { data, error } = await supabase
+        .from('tasks')
+        .update(updates)
+        .eq('id', id)
+        .single();
     if (error) {
         throw error;
     }
@@ -34,7 +41,10 @@ export async function updateTask(id: string, updates: Partial<Task>) {
 }
 
 export async function deleteTask(id: string) {
-    const { error } = await supabase.from('tasks').delete().eq('id', id);
+    const { error } = await supabase
+        .from('tasks')
+        .delete()
+        .eq('id', id);
     if (error) {
         throw error;
     }

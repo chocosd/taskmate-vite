@@ -1,6 +1,9 @@
 import Button, { ButtonProps } from './Button';
 
-export type TabButtonProps = Pick<ButtonProps, 'name' | 'action' | 'children' | 'size'> & {
+export type TabButtonProps = Pick<
+    ButtonProps,
+    'name' | 'action' | 'children' | 'size'
+> & {
     isActive: boolean;
 };
 

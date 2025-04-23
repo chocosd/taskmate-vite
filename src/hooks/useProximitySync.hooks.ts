@@ -1,13 +1,23 @@
 import { ChannelMessageType } from '@enums/channel-message-type.enum';
-import { ChannelMessage, PositionUpdateChannelMessage } from '@models/channel-message.model';
+import {
+    ChannelMessage,
+    PositionUpdateChannelMessage,
+} from '@models/channel-message.model';
 import { distinctUntilObjectChanged } from '@utils/distinct-until-object-changed';
-import { calculateProximity, getMyWindowPosition, WindowPosition } from '@utils/position';
+import {
+    calculateProximity,
+    getMyWindowPosition,
+    WindowPosition,
+} from '@utils/position';
 import { useEffect, useRef } from 'react';
 import { useSharedWindow } from '../context/shared-window/useSharedWindow';
 
 const THRESHOLD = 0.92;
 
-function isValidMessage(data: ChannelMessage, currentId: string): boolean {
+function isValidMessage(
+    data: ChannelMessage,
+    currentId: string
+): boolean {
     return !!data.payload && data.payload?.id !== currentId;
 }
 
@@ -27,11 +37,18 @@ export function useProximitySync() {
         myId,
     } = useSharedWindow();
 
-    const lastSentPosition = useRef<WindowPosition>(getMyWindowPosition());
+    const lastSentPosition = useRef<WindowPosition>(
+        getMyWindowPosition()
+    );
     const recentlyPromptedPeers = useRef<Set<string>>(new Set());
 
     const shouldSendUpdate = (current: WindowPosition): boolean => {
-        if (!distinctUntilObjectChanged(current, lastSentPosition.current)) {
+        if (
+            !distinctUntilObjectChanged(
+                current,
+                lastSentPosition.current
+            )
+        ) {
             return false;
         }
 
@@ -48,16 +65,22 @@ export function useProximitySync() {
 
             switch (type) {
                 case ChannelMessageType.PositionUpdate: {
-                    const otherPos = payload.position as WindowPosition;
+                    const otherPos =
+                        payload.position as WindowPosition;
                     const myPos = getMyWindowPosition();
 
-                    const proximity = calculateProximity(myPos, otherPos);
+                    const proximity = calculateProximity(
+                        myPos,
+                        otherPos
+                    );
 
                     updateProximity((prev) => {
                         if (
                             !prev ||
                             prev.edge !== proximity.edge ||
-                            Math.abs(prev.intensity - proximity.intensity) > 0.01
+                            Math.abs(
+                                prev.intensity - proximity.intensity
+                            ) > 0.01
                         ) {
                             return proximity;
                         }
@@ -117,5 +140,11 @@ export function useProximitySync() {
         registerMessageHandler(handleMessage);
 
         return () => clearInterval(interval);
-    }, [myId, registerMessageHandler, sendChannelMessage, triggerSharePrompt, updateProximity]);
+    }, [
+        myId,
+        registerMessageHandler,
+        sendChannelMessage,
+        triggerSharePrompt,
+        updateProximity,
+    ]);
 }

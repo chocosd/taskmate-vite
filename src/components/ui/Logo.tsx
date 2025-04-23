@@ -11,7 +11,10 @@ type LogoProps = {
     classes?: string[];
 };
 
-export default function Logo({ size = { w: 200, h: 'auto' }, classes }: LogoProps) {
+export default function Logo({
+    size = { w: 200, h: 'auto' },
+    classes,
+}: LogoProps) {
     const { theme } = useTheme();
 
     const style = {

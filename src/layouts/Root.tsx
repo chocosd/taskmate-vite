@@ -19,7 +19,9 @@ export default function Root() {
     const isLoginPage = pathname === `/${Routes.Login}`;
 
     useEffect(() => {
-        const fallback = pathname.replace('/', '').charAt(0).toUpperCase() + pathname.slice(2);
+        const fallback =
+            pathname.replace('/', '').charAt(0).toUpperCase() +
+            pathname.slice(2);
         const title = titleMap[pathname] || fallback || 'Taskmate';
         document.title = `Taskmate: ${title}`;
     }, [pathname]);
@@ -44,7 +46,13 @@ export default function Root() {
             )}
 
             <main className={shouldShowLayout ? 'py-10 px-6' : ''}>
-                <div className={shouldShowLayout ? 'max-w-[1440px] mx-auto w-full' : 'w-full'}>
+                <div
+                    className={
+                        shouldShowLayout
+                            ? 'max-w-[1440px] mx-auto w-full'
+                            : 'w-full'
+                    }
+                >
                     <Outlet />
                 </div>
             </main>

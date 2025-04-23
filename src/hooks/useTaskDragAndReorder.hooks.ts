@@ -21,7 +21,11 @@ export function useTaskDragAndReorder(tasks: Task[]) {
             return;
         }
 
-        const reordered = reorderTasksList(tasks, from.id, overTask.id);
+        const reordered = reorderTasksList(
+            tasks,
+            from.id,
+            overTask.id
+        );
         reorderTasks(reordered);
     };
 
