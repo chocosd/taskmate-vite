@@ -1,9 +1,14 @@
 import { useAuth } from '@context/auth/useAuth';
 import { supabase } from '@lib/supabaseClient';
-import { Task } from '@models/task.model';
+import { Task, TaskPriority } from '@models/task.model';
 import { getTasksWithUpdatedOrder } from '@utils/get-updated-order';
 import { DateTime } from 'luxon';
 import { useEffect, useRef, useState } from 'react';
+import {
+    ConnectionsUser,
+    OptionsData,
+    TasksWithoutIds,
+} from './supabase-tasks-context.model';
 import { SupabaseTasksContext } from './supabase-tasks.context';
 
 export function SupabaseTasksProvider({
@@ -14,7 +19,15 @@ export function SupabaseTasksProvider({
     const { user } = useAuth();
 
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [connections, setConnections] = useState<ConnectionsUser[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [createdTasks, setCreatedTasks] = useState<Task[]>([]);
+    const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+    const [optionsData, setOptionsData] = useState<OptionsData>({ assignee: { label: '', value: ''}, due_date: '', priority: TaskPriority.Low});
+
+    const openOptions = () => setIsOptionsOpen(true);
+    const closeOptions = () => setIsOptionsOpen(false);
+
     const hasFetched = useRef(false);
 
     useEffect(() => {
@@ -26,22 +39,52 @@ export function SupabaseTasksProvider({
 
         setLoading(true);
 
+        // Fetch assigned tasks
         supabase
             .from('tasks')
             .select('*')
-            .eq('user_id', user.id)
+            .eq('assigned_to_user_id', user.id)
             .then(({ data, error }) => {
-                if (data) {
-                    setTasks(data);
-                }
+                if (data) setTasks(data);
+
                 if (error) {
                     console.error(
                         '[SupabaseTasks] Fetch error:',
                         error
                     );
                 }
+            });
 
-                setLoading(false);
+        // Fetch created tasks
+        supabase
+            .from('tasks')
+            .select('*')
+            .eq('created_by_user_id', user.id)
+            .then(({ data, error }) => {
+                if (data) setCreatedTasks(data);
+
+                if (error) {
+                    console.error(
+                        '[SupabaseTasks] Fetch error:',
+                        error
+                    );
+                }
+            });
+
+        setLoading(false);
+
+        supabase
+            .from('connections')
+            .select('*')
+            .eq('user_id', user.id)
+            .then(({ data, error }) => {
+                if (error) {
+                    console.error(error);
+                }
+
+                if (data) {
+                    setConnections(data);
+                }
             });
     }, [user]);
 
@@ -51,10 +94,15 @@ export function SupabaseTasksProvider({
             title: task.title!,
             order: task.order ?? 0,
             ...(task.parent_id && { parent_id: task.parent_id }),
-            user_id: user!.id,
+            created_by_user_id: user!.id,
             generated: task.generated ?? false,
             completed: false,
             created_at: DateTime.now().toISO(),
+            ...(optionsData.assignee && {
+                assigned_to_user_id: String(optionsData.assignee.value) 
+            }),
+            ...(optionsData.due_date && {due_date: optionsData.due_date }),
+            priority: optionsData.priority ?? TaskPriority.Low
         };
 
         const { data, error } = await supabase
@@ -63,15 +111,23 @@ export function SupabaseTasksProvider({
             .select();
 
         if (!error && data?.[0]) {
-            setTasks((prev) => [...prev, data[0]]);
+            if (data?.[0].assigned_to_user_id === user!.id) {
+                setTasks((prev) => [...prev, data[0]]);
+                return;
+            }
         }
     };
 
-    const addTasksBatch = async (tasks: Task[]) => {
+    const addTasksBatch = async (tasks: TasksWithoutIds[]) => {
         const filledTasks: Task[] = tasks.map((task) => ({
             ...task,
             id: crypto.randomUUID(),
-            user_id: user?.id,
+            created_by_user_id: user?.id,
+            ...(optionsData.assignee.value && {
+                assigned_to_user_id: String(optionsData.assignee.value) 
+            }),
+            ...(optionsData.due_date && {due_date: optionsData.due_date }),
+            priority: optionsData.priority ?? TaskPriority.Low
         }));
 
         const { data, error } = await supabase
@@ -80,7 +136,12 @@ export function SupabaseTasksProvider({
             .select();
 
         if (!error && data?.length) {
-            setTasks((prev) => [...prev, ...data]);
+            const updatedTasks = (data as Task[]).filter((task) => task.assigned_to_user_id === user!.id);
+            
+            if (updatedTasks.length) {
+                setTasks((prev) => [...prev, ...updatedTasks]);
+                return;
+            }
         }
 
         if (error) {
@@ -89,28 +150,37 @@ export function SupabaseTasksProvider({
     };
 
     const deleteSubTasks = async (id: string) => {
-        const { error } = await supabase.from('tasks').delete().eq('parent_id', id);
+        const { error } = await supabase
+            .from('tasks')
+            .delete()
+            .eq('parent_id', id);
 
         if (!error) {
-            setTasks((prev) => prev.filter((task) => task.parent_id !== id ));
+            setTasks((prev) =>
+                prev.filter((task) => task.parent_id !== id)
+            );
         }
-    }
+    };
 
     const deleteTaskWithSubtasks = async (id: string) => {
         const { error } = await supabase
-          .from('tasks')
-          .delete()
-          .or(`id.eq.${id},parent_id.eq.${id}`);
-      
+            .from('tasks')
+            .delete()
+            .or(`id.eq.${id},parent_id.eq.${id}`);
+
         if (!error) {
-          setTasks((prev) =>
-            prev.filter((task) => task.id !== id && task.parent_id !== id)
-          );
+            setTasks((prev) =>
+                prev.filter(
+                    (task) => task.id !== id && task.parent_id !== id
+                )
+            );
         } else {
-          console.error('[deleteTaskWithSubtasks] Failed:', error.message);
+            console.error(
+                '[deleteTaskWithSubtasks] Failed:',
+                error.message
+            );
         }
-      };
-      
+    };
 
     const deleteTask = async (id: string) => {
         const { error } = await supabase
@@ -142,22 +212,27 @@ export function SupabaseTasksProvider({
         }
     };
 
-    const updateSubtaskTitles = async (parentId: string, newTitles: string[]) => {
+    const updateSubtaskTitles = async (
+        parentId: string,
+        newTitles: string[]
+    ) => {
         const currentSubtasks = tasks
             .filter((task) => task.parent_id === parentId)
             .sort((a, b) => a.order - b.order);
-    
-        const updatedTasks = currentSubtasks.map((subtask, index) => ({
-            ...subtask,
-            id: subtask.id,
-            title: newTitles[index] ?? subtask.title
-        }));
-    
+
+        const updatedTasks = currentSubtasks.map(
+            (subtask, index) => ({
+                ...subtask,
+                id: subtask.id,
+                title: newTitles[index] ?? subtask.title,
+            })
+        );
+
         const { data, error } = await supabase
             .from('tasks')
             .upsert(updatedTasks, { onConflict: 'id' })
             .select();
-    
+
         if (!error && data?.length) {
             setTasks((prev) =>
                 prev.map((t) => {
@@ -166,12 +241,11 @@ export function SupabaseTasksProvider({
                 })
             );
         }
-    
+
         if (error) {
             throw error;
         }
     };
-    
 
     const renameTask = async (id: string, title: string) => {
         const target = tasks.find((t) => t.id === id);
@@ -251,7 +325,14 @@ export function SupabaseTasksProvider({
                 renameTask,
                 deleteSubTasks,
                 deleteTaskWithSubtasks,
-                updateSubtaskTitles
+                updateSubtaskTitles,
+                createdTasks,
+                connections,
+                isOptionsOpen,
+                openOptions,
+                closeOptions,
+                optionsData,
+                setOptionsData
             }}
         >
             {children}

@@ -1,31 +1,25 @@
-import { ReactNode } from 'react';
+import FormBuilder, {
+    FormBuilderProps,
+} from '@components/forms/FormBuilder';
 import Button from './Button';
+import { ModalProps } from './Modal';
 
-export type ButtonActions<T = unknown> = {
-    name: string;
-    action: (prop?: T) => void;
-    modifierClasses?: string;
-};
+type FormModalProps<TModel extends Record<string, unknown>> = Omit<ModalProps, 'onConfirm' | 'children'> &
+    Omit<FormBuilderProps<TModel>, 'onSubmit'> & {
+        onSubmit: (data: Record<string, unknown>) => void;
+    };
 
-export type ModalProps = {
-    isOpen: boolean;
-    onClose: () => void;
-    title: string;
-    children: ReactNode;
-    additionalActions?: ButtonActions[];
-    onConfirm?: () => void;
-    submitLabel?: string;
-};
-
-export default function Modal({
+export default function FormModal<TModel extends Record<string, unknown>>({
     isOpen,
     onClose,
     title,
-    children,
     additionalActions,
-    onConfirm,
     submitLabel = 'Submit',
-}: ModalProps) {
+    fields,
+    updateModel,
+    model,
+    onSubmit,
+}: FormModalProps<TModel>) {
     if (!isOpen) {
         return null;
     }
@@ -36,7 +30,15 @@ export default function Modal({
                 <h2 className="text-lg font-semibold mb-4">
                     {title}
                 </h2>
-                <div className="text-sm mb-6">{children}</div>
+                <div className="text-sm mb-6">
+                    {
+                        <FormBuilder
+                            fields={fields}
+                            model={model}
+                            updateModel={updateModel}
+                        />
+                    }
+                </div>
                 <div className="flex justify-end gap-2">
                     <Button
                         action={onClose}
@@ -51,13 +53,11 @@ export default function Modal({
                             classes={`px-4 py-1 rounded ${action.modifierClasses} text-sm`}
                         />
                     ))}
-                    {onConfirm && (
-                        <Button
-                            action={onConfirm}
-                            classes="px-4 py-1 rounded bg-red-600 hover:bg-red-500 text-sm"
-                            name={submitLabel}
-                        />
-                    )}
+                    <Button
+                        action={() => onSubmit(model)}
+                        classes="px-4 py-1 rounded bg-red-600 hover:bg-red-500 text-sm"
+                        name={submitLabel}
+                    />
                 </div>
             </div>
         </div>

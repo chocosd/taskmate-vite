@@ -3,21 +3,27 @@ import { User } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
 import { AuthContext } from './auth.context';
 
-export default function AuthProvider({ children }: { children: React.ReactNode }) {
+export default function AuthProvider({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const getSession = async () => {
-            const { data, error } = await supabase.auth.getSession();
+            const { data } = await supabase.auth.getSession();
             setUser(data.session?.user ?? null);
             setLoading(false);
         };
 
-        const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null);
-            setLoading(false);
-        });
+        const { data: listener } = supabase.auth.onAuthStateChange(
+            (_event, session) => {
+                setUser(session?.user ?? null);
+                setLoading(false);
+            }
+        );
 
         getSession();
 
@@ -27,7 +33,10 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     }, []);
 
     const login = async (email: string, password: string) => {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
         if (error) {
             throw error;
         }
@@ -39,7 +48,11 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     };
 
     if (loading) {
-        return <div className="flex justify-center items-center h-screen">Loading...</div>;
+        return (
+            <div className="flex justify-center items-center h-screen">
+                Loading...
+            </div>
+        );
     }
 
     return (

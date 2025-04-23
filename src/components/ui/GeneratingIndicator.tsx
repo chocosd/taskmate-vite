@@ -11,7 +11,11 @@ export default function GeneratingIndicator({
         <div
             className={`flex items-center w-full p-8 justify-center gap-2 text-lg text-blue-500 animate-pulse ${className}`}
         >
-            <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+            <svg
+                className="w-4 h-4 animate-spin"
+                viewBox="0 0 24 24"
+                fill="none"
+            >
                 <circle
                     className="opacity-25"
                     cx="12"

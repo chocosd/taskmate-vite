@@ -1,3 +1,5 @@
+import { CSSProperties } from 'react';
+
 export type ButtonProps = {
     name?: string;
     action?: () => void;
@@ -5,6 +7,7 @@ export type ButtonProps = {
     children?: React.ReactNode;
     size?: 'small' | 'normal' | 'large';
     classes?: string[] | string;
+    styles?: CSSProperties;
     options?: {
         overrideClasses: boolean;
     };
@@ -17,9 +20,12 @@ export default function Button({
     children,
     classes = '',
     size = 'normal',
+    styles,
     options,
 }: ButtonProps) {
-    const classList = Array.isArray(classes) ? classes.join(' ') : classes;
+    const classList = Array.isArray(classes)
+        ? classes.join(' ')
+        : classes;
 
     const baseStyles = `inline-flex items-center ${size} rounded-md text-sm font-medium transition-colors duration-200 focus:outline-none`;
 
@@ -33,7 +39,12 @@ export default function Button({
     }
 
     return (
-        <button type={type} onClick={action} className={className}>
+        <button
+            style={styles}
+            type={type}
+            onClick={action}
+            className={className}
+        >
             {name || children}
         </button>
     );

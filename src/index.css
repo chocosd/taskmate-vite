@@ -33,7 +33,8 @@
 }
 
 .clip-reveal {
-    animation: clipReveal 0.8s cubic-bezier(0.6, -0.28, 0.735, 1) forwards;
+    animation: clipReveal 0.8s cubic-bezier(0.6, -0.28, 0.735, 1)
+        forwards;
     will-change: clip-path, opacity;
 }
 

@@ -19,14 +19,31 @@ export function getMyWindowPosition(): WindowPosition {
     };
 }
 
-export function calculateProximity(myPos: WindowPosition, otherPos: WindowPosition): ProximityData {
+export function calculateProximity(
+    myPos: WindowPosition,
+    otherPos: WindowPosition
+): ProximityData {
     const threshold = 600;
 
     const distances = {
-        left: Math.max(0, threshold - Math.abs(myPos.x - (otherPos.x + otherPos.width))),
-        right: Math.max(0, threshold - Math.abs(myPos.x + myPos.width - otherPos.x)),
-        top: Math.max(0, threshold - Math.abs(myPos.y - (otherPos.y + otherPos.height))),
-        bottom: Math.max(0, threshold - Math.abs(myPos.y + myPos.height - otherPos.y)),
+        left: Math.max(
+            0,
+            threshold -
+                Math.abs(myPos.x - (otherPos.x + otherPos.width))
+        ),
+        right: Math.max(
+            0,
+            threshold - Math.abs(myPos.x + myPos.width - otherPos.x)
+        ),
+        top: Math.max(
+            0,
+            threshold -
+                Math.abs(myPos.y - (otherPos.y + otherPos.height))
+        ),
+        bottom: Math.max(
+            0,
+            threshold - Math.abs(myPos.y + myPos.height - otherPos.y)
+        ),
     };
 
     const edge = Object.entries(distances).reduce((a, b) =>

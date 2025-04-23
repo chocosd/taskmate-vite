@@ -2,9 +2,9 @@ import BaseInput, { FormInputProps } from './BaseInput';
 
 export type NumberInputProps = FormInputProps & {
     value: number;
-    onChange: (value: number) => void;
-    min?: number;
-    max?: number;
+    onChange: (value: string) => void;
+    minLength?: number;
+    maxLength?: number;
 };
 
 const inputClasses = `w-full rounded-md border border-gray-300 dark:border-gray-600
@@ -17,14 +17,14 @@ const inputClasses = `w-full rounded-md border border-gray-300 dark:border-gray-
   disabled:text-gray-400 dark:disabled:text-gray-500
   p-2 transition`;
 
-export default function NumberInput({
+export default function TextInput({
     value,
     onChange,
     disabled,
     label,
     hint,
-    min,
-    max,
+    minLength,
+    maxLength,
     error,
 }: NumberInputProps) {
     return (
@@ -35,12 +35,12 @@ export default function NumberInput({
             error={error}
         >
             <input
-                type="number"
+                type="text"
                 value={value}
-                onChange={(e) => onChange(Number(e.target.value))}
+                onChange={(e) => onChange(e.target.value)}
                 disabled={disabled}
-                min={min}
-                max={max}
+                minLength={minLength}
+                maxLength={maxLength}
                 className={inputClasses}
             />
         </BaseInput>

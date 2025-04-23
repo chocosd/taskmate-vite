@@ -1,7 +1,10 @@
 import { Task } from '@models/task.model';
 import { TaskStatus } from '@state/task/enums/task-status.enum';
 
-export function getSubtaskStatuses(taskId: string, allTasks: Task[]): TaskStatus[] {
+export function getSubtaskStatuses(
+    taskId: string,
+    allTasks: Task[]
+): TaskStatus[] {
     return allTasks
         .filter((task) => task.parent_id === taskId)
         .map((task) => {

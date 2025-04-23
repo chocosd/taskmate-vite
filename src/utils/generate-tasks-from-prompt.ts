@@ -11,7 +11,9 @@ const openai = new OpenAI({
 
 const systemPrompt = import.meta.env.VITE_AI_SYSTEM_PROMPT;
 
-export async function generateTasksFromPrompt(prompt: string): Promise<string[]> {
+export async function generateTasksFromPrompt(
+    prompt: string
+): Promise<string[]> {
     const response = await openai.chat.completions.create({
         model: 'gpt-3.5-turbo',
         messages: [

@@ -25,7 +25,11 @@ export default function ToastRenderer() {
     return (
         <div className="fixed top-4 right-4 flex flex-col gap-2 z-50">
             {toasts.map((toast) => (
-                <ToastItem key={toast.id} toast={toast} onDismiss={() => dismissToast(toast.id)} />
+                <ToastItem
+                    key={toast.id}
+                    toast={toast}
+                    onDismiss={() => dismissToast(toast.id)}
+                />
             ))}
         </div>
     );
@@ -69,11 +73,18 @@ function ToastItem({
                 <X className="w-3 h-3" />
             </Button>
 
-            <p className={`text-sm font-semibold capitalize mb-1 ${text}`}>{toast.type}</p>
+            <p
+                className={`text-sm font-semibold capitalize mb-1 ${text}`}
+            >
+                {toast.type}
+            </p>
             <p className="text-sm text-white/90">{toast.message}</p>
 
             <div className="flex h-1 overflow-hidden rounded-b bg-white/10 mt-2">
-                <div className={`h-full ${bg} transition-all`} style={{ width: `${progress}%` }} />
+                <div
+                    className={`h-full ${bg} transition-all`}
+                    style={{ width: `${progress}%` }}
+                />
             </div>
         </div>
     );

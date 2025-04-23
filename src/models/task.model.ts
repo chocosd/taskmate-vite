@@ -10,5 +10,14 @@ export type Task = {
     parent_id?: string;
     order: number;
     subtasks?: TaskStatus[];
-    user_id: string | undefined;
+    created_by_user_id: string | undefined;
+    assigned_to_user_id?: string | undefined;
+    priority?: TaskPriority;
+    due_date?: string | null;
 };
+
+export enum TaskPriority {
+    Low = 'low',
+    Medium = 'medium',
+    High = 'high',
+}
