@@ -1,3 +1,4 @@
+import { TasksWithoutIds } from '@context/supabase-tasks/supabase-tasks-context.model';
 import { useSupabaseTasks } from '@context/supabase-tasks/useSupabaseTasks';
 import { useToast } from '@context/toast/useToast';
 import { ToastType } from '@enums/toast-type.enum';
@@ -8,6 +9,7 @@ import Modal, { ButtonActions } from '@ui/Modal';
 import ProgressBar from '@ui/ProgressBar';
 import { generateTasksFromPrompt } from '@utils/generate-tasks-from-prompt';
 import { Pen, Plus, Sparkles, Trash2 } from 'lucide-react';
+import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -27,6 +29,7 @@ export default function TaskItem({
     isDragging = false,
 }: TaskItemProps) {
     const {
+        addTasksBatch,
         renameTask,
         updateSubtaskTitles,
         deleteSubTasks,
@@ -117,8 +120,6 @@ export default function TaskItem({
         const newTitle = (e.target as unknown as { value: string })
             .value;
 
-        console.log(newTitle);
-
         if (task.subtasks && !!task.subtasks.length) {
             setPendingRenameTask(task);
             setPendingNewTitle(newTitle);
@@ -146,14 +147,17 @@ export default function TaskItem({
 
             const results = await generateTasksFromPrompt(prompt);
 
-            results.forEach((title, index) => {
-                addTask({
+            const tasks: TasksWithoutIds[] = results.map((title, index) => ({
                     title,
                     generated: true,
                     parent_id: task.id,
                     order: index,
-                });
-            });
+                    completed: false,
+                    created_at: DateTime.now().toISO()
+            }));
+
+            addTasksBatch(tasks);
+
         } catch (err) {
             showToast(
                 ToastType.Error,

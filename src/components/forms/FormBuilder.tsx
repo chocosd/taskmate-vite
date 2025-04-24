@@ -23,11 +23,13 @@ export type FormBuilderProps<T extends Record<string, unknown>> = {
     onSubmit?: (data: T) => void;
 };
 
-export default function FormBuilder<TModel extends Record<string, unknown>>({
+export default function FormBuilder<
+    TModel extends Record<string, unknown>,
+>({
     fields,
     model,
     onSubmit,
-    updateModel
+    updateModel,
 }: FormBuilderProps<TModel>) {
     const { errors, validateForm, formState, touched, updateField } =
         useFormBuilder<TModel>(fields, model, updateModel);

@@ -4,12 +4,17 @@ import FormBuilder, {
 import Button from './Button';
 import { ModalProps } from './Modal';
 
-type FormModalProps<TModel extends Record<string, unknown>> = Omit<ModalProps, 'onConfirm' | 'children'> &
+type FormModalProps<TModel extends Record<string, unknown>> = Omit<
+    ModalProps,
+    'onConfirm' | 'children'
+> &
     Omit<FormBuilderProps<TModel>, 'onSubmit'> & {
         onSubmit: (data: Record<string, unknown>) => void;
     };
 
-export default function FormModal<TModel extends Record<string, unknown>>({
+export default function FormModal<
+    TModel extends Record<string, unknown>,
+>({
     isOpen,
     onClose,
     title,

@@ -71,7 +71,7 @@ const fields: FormField[] = [
 
 export default function ProfileForm() {
     const [profileData, setProfileData] = useState(model);
-    
+
     const handleSubmit = (data: Record<string, unknown>) => {
         console.log('✅ Submitted Profile:', data);
     };
