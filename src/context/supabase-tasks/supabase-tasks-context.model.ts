@@ -1,4 +1,5 @@
 import { FormOption } from '@components/forms/fields/SelectInput';
+import { TaskListView } from '@enums/task-list-view.enum';
 import { Task, TaskPriority } from '@models/task.model';
 import { StateSetter } from '@utils/types/state-setter.type';
 
@@ -47,6 +48,15 @@ export type SupabaseTasksContextType = {
     isOptionsOpen: boolean;
     openOptions: () => void;
     closeOptions: () => void;
+    fetchCreatedTasks: () => Promise<void>;
     optionsData: OptionsData;
     setOptionsData: StateSetter<OptionsData>;
+    currentTab: TaskListView;
+    setCurrentTab: StateSetter<TaskListView>;
+    setTasks: StateSetter<Task[]>;
+    setCreatedTasks: StateSetter<Task[]>;
+    setConnections: StateSetter<ConnectionsUser[]>;
+    setLoading: StateSetter<boolean>;
+    fetchAssignedTasks: () => Promise<void>;
+    fetchConnections: () => Promise<void>;
 };

@@ -30,7 +30,8 @@
             "@utils/*": ["utils/*"],
             "@state/*": ["state/*"],
             "@context/*": ["context/*"],
-            "@styles/*": ["styles/*"]
+            "@styles/*": ["styles/*"],
+            "@services/*": ["services/*"]
         },
 
         /* Linting */

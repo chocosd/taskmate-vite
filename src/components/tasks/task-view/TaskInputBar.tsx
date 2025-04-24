@@ -17,10 +17,7 @@ export default function TaskInputBar({
     setIsGenerating,
 }: TaskInputBarProps) {
     const [input, setInput] = useState('');
-    const { handleAddTask, handleGenerateTasks } = useTaskActions(
-        input,
-        setInput
-    );
+    const { handleAddTask, handleGenerateTasks } = useTaskActions(input, setInput);
     const { openOptions } = useSupabaseTasks();
 
     const handleSubmitOnEnter = (e: React.KeyboardEvent) => {

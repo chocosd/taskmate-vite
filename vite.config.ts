@@ -25,6 +25,7 @@ export default defineConfig({
             '@utils': resolve(__dirname, 'src/utils'),
             '@context': resolve(__dirname, 'src/context'),
             '@styles': resolve(__dirname, 'src/styles'),
+            '@services': resolve(__dirname, 'src/services'),
         },
     },
 });
