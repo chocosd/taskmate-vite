@@ -1,6 +1,6 @@
 import BaseInput, { FormInputProps } from './BaseInput';
 
-export type TextInputProps = FormInputProps & {
+export type PasswordInputProps = FormInputProps & {
     value: string;
     onChange: (value: string) => void;
     minLength?: number;
@@ -17,17 +17,17 @@ const inputClasses = `w-full rounded-md border border-gray-300 dark:border-gray-
   disabled:text-gray-400 dark:disabled:text-gray-500
   p-2 transition`;
 
-export default function TextInput({
+export default function PasswordInput({
     value,
     onChange,
     disabled,
     label,
-    placeholder,
     hint,
     minLength,
     maxLength,
+    placeholder,
     error,
-}: TextInputProps) {
+}: PasswordInputProps) {
     return (
         <BaseInput
             label={label}
@@ -36,7 +36,7 @@ export default function TextInput({
             error={error}
         >
             <input
-                type="text"
+                type="password"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 disabled={disabled}

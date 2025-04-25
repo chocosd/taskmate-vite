@@ -1,9 +1,10 @@
 import BaseInput, { FormInputProps } from './BaseInput';
+import { FormOption } from './SelectInput';
 
 export type RadioInputProps = FormInputProps & {
-    value: string;
-    options: { label: string; value: string }[];
-    onChange: (val: string) => void;
+    value: string | number;
+    options: FormOption[];
+    onChange: (val: string | number) => void;
 };
 
 export default function RadioInput({

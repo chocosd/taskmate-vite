@@ -245,16 +245,20 @@ export default function TaskItem({
                 onDrop={onDrop}
                 className={`${taskClass()} relative group ${dragClass}`}
             >
-                <div className={`flex w-full items-start justify-start gap-3 ${completedTaskClass()}`}>
+                <div
+                    className={`flex w-full items-start justify-start gap-3 ${completedTaskClass()}`}
+                >
                     <div className="w-full flex flex-col gap-2">
-                    <TaskItemHeader
-                        task={task}
-                        showEditTitle={showEditTitle}
-                        inputTitle={inputTitle}
-                        onTitleChange={setInputTitle}
-                        onRenameKeyDown={handleRenameAttempt}
-                        onCheckboxToggle={handleTaskToggleOnChange}
-                    />
+                        <TaskItemHeader
+                            task={task}
+                            showEditTitle={showEditTitle}
+                            inputTitle={inputTitle}
+                            onTitleChange={setInputTitle}
+                            onRenameKeyDown={handleRenameAttempt}
+                            onCheckboxToggle={
+                                handleTaskToggleOnChange
+                            }
+                        />
                         {isGeneratingSubtasks ? (
                             <div className="flex w-full items-start gap-2 mt-2">
                                 <GeneratingIndicator message="Generating subtasks from task..." />
@@ -275,7 +279,7 @@ export default function TaskItem({
                         )}
                     </div>
                 </div>
-                <TaskActionsBar 
+                <TaskActionsBar
                     onAddSubtask={handleManualSubtask}
                     onDelete={handleTaskDeleteOnChange}
                     onEdit={toggleRenameEdit}

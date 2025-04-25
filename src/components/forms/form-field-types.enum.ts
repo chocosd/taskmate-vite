@@ -7,4 +7,5 @@ export enum FormFieldType {
     DATETIME = 'datetime',
     RADIO = 'radio',
     TEXT = 'text',
+    PASSWORD = 'password',
 }

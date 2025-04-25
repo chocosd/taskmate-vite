@@ -1,7 +1,11 @@
+import { LogInModel, SignUpModel } from '@components/login/LoginForm';
 import { User } from '@supabase/supabase-js';
 
 export type AuthContextType = {
     user: User | null;
-    login: (email: string, password: string) => Promise<void>;
+    login: (loginModel: LogInModel) => Promise<void>;
+    signUp: (
+        signUpModel: Omit<SignUpModel, 'matchingPassword'>
+    ) => Promise<void>;
     logout: () => Promise<void>;
 };

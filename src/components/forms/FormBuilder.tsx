@@ -9,33 +9,57 @@ import { type FormInputProps } from './fields/BaseInput';
 import CheckboxInput from './fields/CheckboxInput';
 import DatePickerInput from './fields/DatePickerInput';
 import NumberInput from './fields/NumberInput';
+import PasswordInput from './fields/PasswordInput';
 import RadioInput from './fields/RadioInput';
 import SelectInput from './fields/SelectInput';
 import TextAreaInput from './fields/TextAreaInput';
+import TextInput from './fields/TextInput';
 import { FormFieldType } from './form-field-types.enum';
 import { type FormField } from './form-types.model';
+import {
+    isAutocompleteField,
+    isCheckboxField,
+    isDatetimeField,
+    isNumberField,
+    isPasswordField,
+    isRadioField,
+    isSelectField,
+    isTextareaField,
+    isTextField,
+} from './guards/form-field-type.guards';
 import { useFormBuilder } from './useFormBuilder';
 
-export type FormBuilderProps<T extends Record<string, unknown>> = {
-    fields: FormField[];
-    model: T;
-    updateModel: StateSetter<T>;
-    onSubmit?: (data: T) => void;
-};
+export type FormBuilderProps<TModel extends Record<string, unknown>> =
+    {
+        fields: FormField<TModel>[];
+        model: TModel;
+        title?: string;
+        children?: React.ReactNode;
+        updateModel: StateSetter<TModel>;
+        onSubmit?: (data: TModel) => void;
+    };
 
 export default function FormBuilder<
     TModel extends Record<string, unknown>,
 >({
     fields,
     model,
+    title,
     onSubmit,
+    children,
     updateModel,
 }: FormBuilderProps<TModel>) {
     const { errors, validateForm, formState, touched, updateField } =
         useFormBuilder<TModel>(fields, model, updateModel);
     const { showToast } = useToast();
 
-    const renderField = (field: FormField) => {
+    const renderField = <K extends keyof TModel>(
+        field: FormField<TModel>
+    ) => {
+        const value = formState[field.name];
+        const setValue = (val: TModel[K]) =>
+            updateField(field.name, val);
+
         const isHidden =
             typeof field.hide === 'function'
                 ? field.hide(formState)
@@ -55,97 +79,125 @@ export default function FormBuilder<
             error: touched && errors[field.name],
             label: field.label,
             hint: field.config?.hint,
+            placeholder: field.config?.placeholder,
         };
 
         switch (field.type) {
             case FormFieldType.NUMBER:
+                if (!isNumberField(field)) {
+                    return null;
+                }
                 return (
                     <NumberInput
-                        key={field.name}
-                        value={
-                            (formState[field.name] as number) ?? ''
-                        }
-                        onChange={(val) =>
-                            updateField(field.name, val)
-                        }
+                        key={String(field.name)}
+                        value={value as number}
+                        onChange={setValue as (val: number) => void}
                         {...commonProps}
                         min={field.config?.min}
                         max={field.config?.max}
                     />
                 );
 
+            case FormFieldType.PASSWORD:
+                if (!isPasswordField(field)) {
+                    return null;
+                }
+
+                return (
+                    <PasswordInput
+                        key={String(field.name)}
+                        {...commonProps}
+                        value={value as string}
+                        onChange={setValue as (val: string) => void}
+                    />
+                );
+
+            case FormFieldType.TEXT:
+                if (!isTextField(field)) {
+                    return null;
+                }
+
+                return (
+                    <TextInput
+                        key={String(field.name)}
+                        {...commonProps}
+                        value={value as string}
+                        onChange={setValue as (val: string) => void}
+                    />
+                );
+
             case FormFieldType.RADIO:
+                if (!isRadioField(field)) {
+                    return null;
+                }
                 return (
                     <RadioInput
-                        key={field.name}
+                        key={String(field.name)}
                         {...commonProps}
                         options={field.options}
-                        onChange={(val) =>
-                            updateField(field.name, val)
-                        }
-                        value={
-                            (formState[field.name] as string) ?? ''
+                        value={value as string | number}
+                        onChange={
+                            setValue as (val: string | number) => void
                         }
                     />
                 );
 
             case FormFieldType.AUTOCOMPLETE:
+                if (!isAutocompleteField(field)) {
+                    return null;
+                }
+
                 return (
                     <AutocompleteInput
-                        key={field.name}
-                        value={
-                            (formState[
-                                field.name
-                            ] as AutocompleteOption) ?? {}
+                        key={String(field.name)}
+                        value={value as AutocompleteOption | null}
+                        onChange={
+                            setValue as (
+                                val: AutocompleteOption | null
+                            ) => void
                         }
                         {...commonProps}
-                        onChange={(val) =>
-                            updateField(field.name, val)
-                        }
                         loadOptions={field.config.loadOptions}
                     />
                 );
 
             case FormFieldType.TEXTAREA:
+                if (!isTextareaField(field)) {
+                    return null;
+                }
                 return (
                     <TextAreaInput
-                        key={field.name}
-                        value={
-                            (formState[field.name] as string) ?? ''
-                        }
-                        onChange={(val) =>
-                            updateField(field.name, val)
-                        }
+                        key={String(field.name)}
+                        value={value as string}
+                        onChange={setValue as (val: string) => void}
                         {...commonProps}
                         rows={field.config?.rows}
                     />
                 );
 
             case FormFieldType.DATETIME:
+                if (!isDatetimeField(field)) {
+                    return null;
+                }
                 return (
                     <DatePickerInput
-                        key={field.name}
-                        value={
-                            (formState[field.name] as string) ?? ''
-                        }
+                        key={String(field.name)}
+                        value={value as string}
+                        onChange={setValue as (val: string) => void}
                         {...commonProps}
-                        onChange={(val) =>
-                            updateField(field.name, val)
-                        }
                     />
                 );
 
             case FormFieldType.SELECT:
+                if (!isSelectField(field)) {
+                    return null;
+                }
                 return (
                     <SelectInput
-                        key={field.name}
-                        value={
-                            (formState[field.name] as
-                                | string
-                                | number) ?? ''
-                        }
-                        onChange={(val) =>
-                            updateField(field.name, val)
+                        key={String(field.name)}
+                        value={value as string | number}
+                        onChange={
+                            setValue as (val: string | number) => void
                         }
                         {...commonProps}
                         options={field.options}
@@ -153,22 +205,22 @@ export default function FormBuilder<
                 );
 
             case FormFieldType.CHECKBOX:
+                if (!isCheckboxField(field)) {
+                    return null;
+                }
                 return (
                     <CheckboxInput
-                        key={field.name}
-                        checked={
-                            (formState[field.name] as boolean) ??
-                            false
-                        }
-                        onChange={(val) =>
-                            updateField(field.name, val)
-                        }
+                        key={String(field.name)}
+                        checked={(value as boolean) ?? false}
+                        onChange={setValue as (val: boolean) => void}
                         {...commonProps}
                     />
                 );
 
             default:
-                return null;
+                throw new Error(
+                    `FormFieldType ${field.type} not recognised, please add this to FormBuilder.tsx`
+                );
         }
     };
 
@@ -185,17 +237,33 @@ export default function FormBuilder<
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            {fields.map(renderField)}
-
-            {onSubmit && (
-                <button
-                    type="submit"
-                    className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
-                >
-                    Submit
-                </button>
+        <>
+            {title && (
+                <h2 className="text-start text-2xl font-semibold md:flex mb-6">
+                    {title}
+                </h2>
             )}
-        </form>
+            <form
+                className="flex flex-col items-start gap-2"
+                onSubmit={handleSubmit}
+            >
+                {fields.map((field) => (
+                    <div className="flex-auto w-full">
+                        {renderField(field)}
+                    </div>
+                ))}
+
+                {children}
+
+                {onSubmit && (
+                    <button
+                        type="submit"
+                        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
+                    >
+                        Submit
+                    </button>
+                )}
+            </form>
+        </>
     );
 }

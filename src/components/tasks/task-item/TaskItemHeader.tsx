@@ -8,7 +8,9 @@ interface TaskItemHeaderProps {
     inputTitle: string;
     onTitleChange: (val: string) => void;
     onCheckboxToggle: () => void;
-    onRenameKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+    onRenameKeyDown: (
+        e: React.KeyboardEvent<HTMLInputElement>
+    ) => void;
 }
 
 export default function TaskItemHeader({
@@ -35,16 +37,28 @@ export default function TaskItemHeader({
     );
 
     const priorityStyles = () => {
-        let styles = { background: 'bg-transparent', color: 'text-white' };
+        let styles = {
+            background: 'bg-transparent',
+            color: 'text-white',
+        };
         switch (task.priority) {
             case TaskPriority.High:
-                styles = { background: 'bg-red-500', color: 'text-white' };
+                styles = {
+                    background: 'bg-red-500',
+                    color: 'text-white',
+                };
                 break;
             case TaskPriority.Medium:
-                styles = { background: 'bg-orange-500', color: 'text-white' };
+                styles = {
+                    background: 'bg-orange-500',
+                    color: 'text-white',
+                };
                 break;
             case TaskPriority.Low:
-                styles = { background: 'bg-yellow-500', color: 'text-black' };
+                styles = {
+                    background: 'bg-yellow-500',
+                    color: 'text-black',
+                };
                 break;
         }
 
@@ -61,7 +75,10 @@ export default function TaskItemHeader({
                     onChange={onCheckboxToggle}
                 />
                 <ProfilePicture
-                    user={{ profile_picture: '', email: 'hello@stevendix.co.uk' }}
+                    user={{
+                        profile_picture: '',
+                        email: 'hello@stevendix.co.uk',
+                    }}
                     size={22}
                     className="mt-[4px]"
                 />
@@ -70,14 +87,22 @@ export default function TaskItemHeader({
 
             <div className="flex w-full items-center gap-2 mt-1">
                 {task.priority && (
-                    <div className={`flex px-3 py-1 items-center gap-1 rounded-md ${priorityStyles().background}`}>
-                        <span className={`text-xs font-bold ${priorityStyles().color}`}>{task.priority}</span>
+                    <div
+                        className={`flex px-3 py-1 items-center gap-1 rounded-md ${priorityStyles().background}`}
+                    >
+                        <span
+                            className={`text-xs font-bold ${priorityStyles().color}`}
+                        >
+                            {task.priority}
+                        </span>
                     </div>
                 )}
                 <span className="text-xs text-blue-400">(AI)</span>
                 {task.due_date && (
                     <div className="text-xs text-zinc-400">
-                        {DateHelper(task.due_date).formatRelativeDueDate()}
+                        {DateHelper(
+                            task.due_date
+                        ).formatRelativeDueDate()}
                     </div>
                 )}
             </div>

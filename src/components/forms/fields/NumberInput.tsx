@@ -24,6 +24,7 @@ export default function NumberInput({
     label,
     hint,
     min,
+    placeholder,
     max,
     error,
 }: NumberInputProps) {
@@ -42,6 +43,7 @@ export default function NumberInput({
                 min={min}
                 max={max}
                 className={inputClasses}
+                placeholder={placeholder}
             />
         </BaseInput>
     );

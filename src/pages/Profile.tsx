@@ -5,7 +5,7 @@ import { Validators } from '@components/forms/validators/validators';
 import { isNumber } from '@utils/functions/is-number';
 import { useState } from 'react';
 
-const model = {
+const model: ProfileModel = {
     name: 'Alice Johnson',
     age: 28,
     gender: 'female',
@@ -13,18 +13,26 @@ const model = {
     isAdmin: true,
 };
 
-const fields: FormField[] = [
+export type ProfileModel = {
+    name: string;
+    age: 28;
+    gender: string;
+    bio: string;
+    isAdmin: boolean;
+};
+
+const fields: FormField<ProfileModel>[] = [
     {
         name: 'name',
         type: FormFieldType.TEXTAREA,
         label: 'Full Name',
         validators: [Validators.required()],
         disabled: (form): boolean => {
-            if (!isNumber(form['age'])) {
+            if (!isNumber(form.age)) {
                 return false;
             }
 
-            return form['age'] > 30;
+            return form.age > 30;
         },
         config: {
             hint: 'Please enter your full name',
