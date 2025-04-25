@@ -2,30 +2,90 @@ import { AutocompleteOption } from './fields/AutocompleteInput';
 import { FormOption } from './fields/SelectInput';
 import { FormFieldType } from './form-field-types.enum';
 
-export type FormStateCallback =
-    | boolean
-    | ((formState: Record<string, unknown>) => boolean);
+// Shared config for all fields
 export type BaseFieldConfig = {
     placeholder?: string;
     hint?: string;
 };
 
-export type ValidatorFn = (
-    value: unknown,
-    formState: Record<string, unknown>
+// Validator function specific to field type and model
+export type ValidatorFn<TModel, TKey extends keyof TModel> = (
+    value: TModel[TKey],
+    formState: TModel
 ) => string | null;
 
-export type BaseField = {
-    name: string;
+// Conditional type to map value type to FormFieldType(s)
+export type FieldTypeForValue<T> = T extends string
+    ?
+          | FormFieldType.TEXT
+          | FormFieldType.PASSWORD
+          | FormFieldType.TEXTAREA
+          | FormFieldType.SELECT
+          | FormFieldType.RADIO
+          | FormFieldType.AUTOCOMPLETE
+    : T extends number
+      ?
+            | FormFieldType.NUMBER
+            | FormFieldType.SELECT
+            | FormFieldType.RADIO
+      : T extends boolean
+        ? FormFieldType.CHECKBOX
+        : T extends Date
+          ? FormFieldType.DATETIME
+          : never;
+
+// ---- Field Types ----
+
+// Base field
+export type BaseField<TModel, TKey extends keyof TModel> = {
+    name: TKey;
     label: string;
-    type: FormFieldType;
-    disabled?: FormStateCallback;
-    hide?: FormStateCallback;
-    validators?: ValidatorFn[];
+    type: FieldTypeForValue<TModel[TKey]>;
+    disabled?: boolean | ((formState: TModel) => boolean);
+    hide?: boolean | ((formState: TModel) => boolean);
+    validators?: ValidatorFn<TModel, TKey>[];
     config?: BaseFieldConfig;
 };
 
-export type NumberField = BaseField & {
+// Field types with specific props
+export type TextField<TModel, TKey extends keyof TModel> = BaseField<
+    TModel,
+    TKey
+> & {
+    type: FormFieldType.TEXT | FormFieldType.PASSWORD;
+    config?: BaseFieldConfig & {
+        minLength?: number;
+        maxLength?: number;
+    };
+};
+
+export type TextAreaField<
+    TModel,
+    TKey extends keyof TModel,
+> = BaseField<TModel, TKey> & {
+    type: FormFieldType.TEXTAREA;
+    config: BaseFieldConfig & {
+        rows?: number;
+    };
+};
+
+export type AutoCompleteField<
+    TModel,
+    TKey extends keyof TModel,
+> = BaseField<TModel, TKey> & {
+    type: FormFieldType.AUTOCOMPLETE;
+    options: FormOption[];
+    config: BaseFieldConfig & {
+        loadOptions: (
+            search: string
+        ) => Promise<AutocompleteOption[]>;
+    };
+};
+
+export type NumberField<
+    TModel,
+    TKey extends keyof TModel,
+> = BaseField<TModel, TKey> & {
     type: FormFieldType.NUMBER;
     config?: BaseFieldConfig & {
         min?: number;
@@ -33,58 +93,55 @@ export type NumberField = BaseField & {
     };
 };
 
-export type CheckboxField = BaseField & {
+export type CheckboxField<
+    TModel,
+    TKey extends keyof TModel,
+> = BaseField<TModel, TKey> & {
     type: FormFieldType.CHECKBOX;
 };
 
-export type TextAreaField = BaseField & {
-    type: FormFieldType.TEXTAREA;
-    config?: BaseFieldConfig & {
-        rows?: number;
-    };
-};
-
-export type TextField = BaseField & {
-    type: FormFieldType.TEXT;
-    config?: BaseFieldConfig & {
-        minLength: number;
-        maxLength: number;
-    };
-};
-
-export type AutoCompleteField = BaseField & {
-    type: FormFieldType.AUTOCOMPLETE;
-    config: BaseFieldConfig & {
-        loadOptions: (
-            search: string
-        ) => Promise<AutocompleteOption[]>;
-    };
-    options?: FormOption[];
-};
-
-export type SelectField = BaseField & {
-    type: FormFieldType.SELECT;
-    options: { label: string; value: string | number }[];
-    config?: BaseFieldConfig;
-};
-
-export type RadioField = BaseField & {
-    type: FormFieldType.RADIO;
-    options: { label: string; value: string }[];
-    config?: BaseFieldConfig;
-};
-
-export type DateTimeField = BaseField & {
+export type DateTimeField<
+    TModel,
+    TKey extends keyof TModel,
+> = BaseField<TModel, TKey> & {
     type: FormFieldType.DATETIME;
-    config?: BaseFieldConfig;
 };
 
-export type FormField =
-    | NumberField
-    | TextAreaField
-    | SelectField
-    | RadioField
-    | DateTimeField
-    | AutoCompleteField
-    | TextField
-    | CheckboxField;
+export type SelectField<
+    TModel,
+    TKey extends keyof TModel,
+> = BaseField<TModel, TKey> & {
+    type: FormFieldType.SELECT;
+    options: FormOption[];
+};
+
+export type RadioField<TModel, TKey extends keyof TModel> = BaseField<
+    TModel,
+    TKey
+> & {
+    type: FormFieldType.RADIO;
+    options: FormOption[];
+};
+
+// ---- FormField ----
+
+// Collated FormField type based on TModel and TKey
+export type FormField<TModel> = {
+    [K in keyof TModel]: TModel[K] extends string
+        ?
+              | AutoCompleteField<TModel, K>
+              | TextField<TModel, K>
+              | TextAreaField<TModel, K>
+              | SelectField<TModel, K>
+              | RadioField<TModel, K>
+        : TModel[K] extends number
+          ?
+                | NumberField<TModel, K>
+                | SelectField<TModel, K>
+                | RadioField<TModel, K>
+          : TModel[K] extends boolean
+            ? CheckboxField<TModel, K>
+            : TModel[K] extends Date
+              ? DateTimeField<TModel, K>
+              : never;
+}[keyof TModel];

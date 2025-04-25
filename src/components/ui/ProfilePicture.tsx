@@ -22,7 +22,7 @@ function stringToColor(str: string) {
 export default function ProfilePicture({
     user,
     size = 32,
-    className
+    className,
 }: ProfilePictureProps) {
     const initials = user.email?.[0]?.toUpperCase() ?? '?';
     const bgColor = stringToColor(user.email ?? 'default');

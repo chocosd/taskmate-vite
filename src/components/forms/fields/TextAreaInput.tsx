@@ -12,6 +12,7 @@ export default function TextAreaInput({
     onChange,
     disabled,
     label,
+    placeholder,
     hint,
     error,
     rows = 4,
@@ -29,6 +30,7 @@ export default function TextAreaInput({
                 disabled={disabled}
                 rows={rows}
                 className={inputClasses}
+                placeholder={placeholder}
             />
         </BaseInput>
     );

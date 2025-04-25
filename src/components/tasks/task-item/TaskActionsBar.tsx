@@ -48,20 +48,30 @@ export default function TaskActionsBar({
 
     return (
         <div className="absolute top-3 right-3 bg-zinc-900 rounded-bl-lg flex gap-2 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            {actions.map(({ label, onClick, icon, hoverClasses = 'hover:bg-zinc-700' }, index) => (
-                <Button
-                    key={label + index}
-                    action={onClick}
-                    classes={`p-1 rounded ${hoverClasses}`}
-                    name={label}
-                    options={{
-                        overrideClasses: true,
-                        hideNames: true,
-                    }}
-                >
-                    {icon}
-                </Button>
-            ))}
+            {actions.map(
+                (
+                    {
+                        label,
+                        onClick,
+                        icon,
+                        hoverClasses = 'hover:bg-zinc-700',
+                    },
+                    index
+                ) => (
+                    <Button
+                        key={label + index}
+                        action={onClick}
+                        classes={`p-1 rounded ${hoverClasses}`}
+                        name={label}
+                        options={{
+                            overrideClasses: true,
+                            hideNames: true,
+                        }}
+                    >
+                        {icon}
+                    </Button>
+                )
+            )}
         </div>
     );
 }

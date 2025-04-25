@@ -1,4 +1,3 @@
-// forms/useFormBuilder.ts
 import { StateSetter } from '@utils/types/state-setter.type';
 import { useCallback, useState } from 'react';
 import { FormFieldType } from './form-field-types.enum';
@@ -18,33 +17,31 @@ function getDefaultValue(type: FormFieldType) {
 export function useFormBuilder<
     TModel extends Record<string, unknown>,
 >(
-    fields: FormField[],
+    fields: FormField<TModel>[],
     model: TModel,
     updateModel: StateSetter<TModel>
 ) {
-    const initialState = fields.reduce(
-        (acc, field) => {
-            acc[field.name] =
-                model[field.name] ?? getDefaultValue(field.type);
-            return acc;
-        },
-        {} as Record<string, unknown>
-    );
+    const initialState = fields.reduce((acc, field) => {
+        const defaultValue =
+            model[field.name] ?? getDefaultValue(field.type);
+        acc[field.name] = defaultValue as TModel[typeof field.name];
+        return acc;
+    }, {} as Partial<TModel>) as TModel;
 
-    const [formState, setFormState] = useState<TModel>(
-        initialState as TModel
-    );
+    const [formState, setFormState] = useState<TModel>(initialState);
     const [errors, setErrors] = useState<
-        Record<string, string | null>
+        Partial<Record<keyof TModel, string | null>>
     >({});
-    const [touched, setTouched] = useState<Record<string, boolean>>(
-        {}
-    );
+    const [touched, setTouched] = useState<
+        Partial<Record<keyof TModel, boolean>>
+    >({});
 
     function validateForm(): boolean {
         let isValid = true;
-        const newErrors: Record<string, string | null> = {};
-        const newTouched: Record<string, boolean> = {};
+        const newErrors: Partial<
+            Record<keyof TModel, string | null>
+        > = {};
+        const newTouched: Partial<Record<keyof TModel, boolean>> = {};
 
         for (const field of fields) {
             const value = formState[field.name];
@@ -69,12 +66,11 @@ export function useFormBuilder<
     }
 
     const updateField = useCallback(
-        (name: string, value: unknown) => {
+        <K extends keyof TModel>(name: K, value: TModel[K]) => {
             setFormState((prev) => ({ ...prev, [name]: value }));
             setTouched((prev) => ({ ...prev, [name]: true }));
 
             const updated = { ...model, [name]: value };
-
             updateModel(updated);
 
             const field = fields.find((f) => f.name === name);
@@ -92,7 +88,7 @@ export function useFormBuilder<
                 setErrors((prev) => ({ ...prev, [name]: null }));
             }
         },
-        [fields, formState, updateModel]
+        [fields, formState, model, updateModel]
     );
 
     return {

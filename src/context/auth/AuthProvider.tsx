@@ -1,3 +1,4 @@
+import { LogInModel, SignUpModel } from '@components/login/LoginForm';
 import { supabase } from '@lib/supabaseClient';
 import { User } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
@@ -32,13 +33,39 @@ export default function AuthProvider({
         };
     }, []);
 
-    const login = async (email: string, password: string) => {
+    const login = async ({ email, password }: LogInModel) => {
         const { error } = await supabase.auth.signInWithPassword({
             email,
             password,
         });
         if (error) {
             throw error;
+        }
+    };
+
+    const signUp = async ({
+        email,
+        password,
+        username,
+    }: Omit<SignUpModel, 'matchingPassword'>) => {
+        const { data: userData, error: signUpError } =
+            await supabase.auth.signUp({
+                email,
+                password,
+            });
+
+        if (userData?.user) {
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .insert({
+                    id: userData.user.id,
+                    username,
+                    profile_image: null,
+                });
+
+            if (profileError) {
+                /* */
+            }
         }
     };
 
@@ -56,7 +83,7 @@ export default function AuthProvider({
     }
 
     return (
-        <AuthContext.Provider value={{ user, login, logout }}>
+        <AuthContext.Provider value={{ user, login, signUp, logout }}>
             {children}
         </AuthContext.Provider>
     );
