@@ -10,6 +10,7 @@ export type ButtonProps = {
     styles?: CSSProperties;
     options?: {
         overrideClasses: boolean;
+        hideNames?: boolean;
     };
 };
 
@@ -44,8 +45,9 @@ export default function Button({
             type={type}
             onClick={action}
             className={className}
+            title={name}
         >
-            {name || children}
+            {(!options?.hideNames && name) || children}
         </button>
     );
 }

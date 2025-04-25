@@ -26,7 +26,7 @@ export default function ProgressBar({
     ).length;
 
     return (
-        <div className="mt-2 w-full flex flex-col gap-1">
+        <div className="w-full flex flex-col gap-1">
             <div className="w-full flex items-center justify-between">
                 {onView && (
                     <Button

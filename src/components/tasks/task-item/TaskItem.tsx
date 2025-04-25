@@ -1,17 +1,20 @@
+import Button from '@components/ui/Button';
 import { TasksWithoutIds } from '@context/supabase-tasks/supabase-tasks-context.model';
 import { useSupabaseTasks } from '@context/supabase-tasks/useSupabaseTasks';
 import { useToast } from '@context/toast/useToast';
 import { ToastType } from '@enums/toast-type.enum';
 import { Task } from '@models/task.model';
-import { aiBadge, taskStyles } from '@styles/taskClassNames';
+import { taskStyles } from '@styles/taskClassNames';
 import GeneratingIndicator from '@ui/GeneratingIndicator';
 import Modal, { ButtonActions } from '@ui/Modal';
 import ProgressBar from '@ui/ProgressBar';
 import { generateTasksFromPrompt } from '@utils/generate-tasks-from-prompt';
-import { Pen, Plus, Sparkles, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import TaskActionsBar from './TaskActionsBar';
+import TaskItemHeader from './TaskItemHeader';
 
 type TaskItemProps = {
     task: Task;
@@ -147,17 +150,18 @@ export default function TaskItem({
 
             const results = await generateTasksFromPrompt(prompt);
 
-            const tasks: TasksWithoutIds[] = results.map((title, index) => ({
+            const tasks: TasksWithoutIds[] = results.map(
+                (title, index) => ({
                     title,
                     generated: true,
                     parent_id: task.id,
                     order: index,
                     completed: false,
-                    created_at: DateTime.now().toISO()
-            }));
+                    created_at: DateTime.now().toISO(),
+                })
+            );
 
             addTasksBatch(tasks);
-
         } catch (err) {
             showToast(
                 ToastType.Error,
@@ -231,19 +235,6 @@ export default function TaskItem({
         },
     ];
 
-    const title = showEditTitle ? (
-        <input
-            type="text"
-            placeholder="Edit Title..."
-            className="w-full px-3 py-1 text-sm rounded border border-zinc-700 dark:bg-zinc-900"
-            onKeyDown={handleRenameAttempt}
-            value={inputTitle}
-            onChange={(e) => setInputTitle(e.target.value)}
-        />
-    ) : (
-        <span className="text-sm truncate">{task.title}</span>
-    );
-
     return (
         <>
             <li
@@ -252,84 +243,65 @@ export default function TaskItem({
                 onDragStart={onDragStart}
                 onDragOver={onDragOver}
                 onDrop={onDrop}
-                className={`${taskClass()} flex-col group ${dragClass}`}
+                className={`${taskClass()} relative group ${dragClass}`}
             >
-                <div
-                    className={`flex items-center w-full justify-between group ${completedTaskClass()}`}
-                >
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                        {/* <GripVertical className="cursor-grab text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200" /> */}
-                        <input
-                            type="checkbox"
-                            checked={task.completed}
-                            onChange={handleTaskToggleOnChange}
-                        />
-                        {title}
-                        {task.generated && (
-                            <span className={aiBadge}>(AI)</span>
+                <div className={`flex w-full items-start justify-start gap-3 ${completedTaskClass()}`}>
+                    <div className="w-full flex flex-col gap-2">
+                    <TaskItemHeader
+                        task={task}
+                        showEditTitle={showEditTitle}
+                        inputTitle={inputTitle}
+                        onTitleChange={setInputTitle}
+                        onRenameKeyDown={handleRenameAttempt}
+                        onCheckboxToggle={handleTaskToggleOnChange}
+                    />
+                        {isGeneratingSubtasks ? (
+                            <div className="flex w-full items-start gap-2 mt-2">
+                                <GeneratingIndicator message="Generating subtasks from task..." />
+                            </div>
+                        ) : (
+                            !!task.subtasks?.length && (
+                                <div className="flex w-full items-start gap-2 mt-2">
+                                    <ProgressBar
+                                        subtasks={task.subtasks}
+                                        onView={() =>
+                                            navigate(
+                                                `/dashboard/${task.id}`
+                                            )
+                                        }
+                                    />
+                                </div>
+                            )
                         )}
                     </div>
-
-                    <div
-                        className={`
-                            flex gap-2
-                            transition-all duration-300 ease-in-out
-                            opacity-0 group-hover:opacity-100
-                            flex-[0_0_0] group-hover:flex-[0_0_auto]
-                            overflow-hidden
-                        `}
-                    >
-                        <button
-                            onClick={toggleRenameEdit}
-                            className="p-1 rounded hover:bg-zinc-700"
-                            title="Edit Title"
-                        >
-                            <Pen className="w-4 h-4 text-zinc-400" />
-                        </button>
-                        <button
-                            onClick={handleManualSubtask}
-                            className="p-1 rounded hover:bg-zinc-700"
-                            title="Add Subtask"
-                        >
-                            <Plus className="w-4 h-4 text-zinc-400" />
-                        </button>
-                        <button
-                            onClick={() => handleAiSubtask()}
-                            className="p-1 rounded hover:bg-zinc-700"
-                            title="Generate Subtasks"
-                        >
-                            <Sparkles className="w-4 h-4 text-cyan-400" />
-                        </button>
-                        <button
-                            onClick={handleTaskDeleteOnChange}
-                            className="text-zinc-500 hover:text-red-500"
-                        >
-                            <Trash2 className="w-4 h-4" />
-                        </button>
-                    </div>
                 </div>
-                {isGeneratingSubtasks ? (
-                    <div className="mt-2 ml-6">
-                        <GeneratingIndicator message="Generating subtasks from task..." />
-                    </div>
-                ) : (
-                    !!task.subtasks?.length && (
-                        <ProgressBar
-                            subtasks={task.subtasks}
-                            onView={() =>
-                                navigate(`/dashboard/${task.id}`)
-                            }
-                        />
-                    )
-                )}
+                <TaskActionsBar 
+                    onAddSubtask={handleManualSubtask}
+                    onDelete={handleTaskDeleteOnChange}
+                    onEdit={toggleRenameEdit}
+                    onGenerateSubtasks={handleAiSubtask}
+                />
             </li>
             {isSubtaskInputOpen && (
-                <input
-                    type="text"
-                    placeholder="Add a subtask..."
-                    onKeyDown={handleSubtaskInput}
-                    className="w-full mb-4 px-3 py-1 text-sm rounded border border-zinc-700 dark:bg-zinc-900"
-                />
+                <section className="w-full items-start flex gap-2">
+                    <input
+                        type="text"
+                        placeholder="Add a subtask..."
+                        onKeyDown={handleSubtaskInput}
+                        className="w-full mb-4 px-3 py-1 text-sm rounded border border-zinc-700 dark:bg-zinc-900"
+                    />
+                    <Button
+                        action={() => setSubtaskInputOpen(false)}
+                        classes="flex-none text-zinc-500 hover:text-red-500"
+                        name="Close"
+                        options={{
+                            overrideClasses: true,
+                            hideNames: true,
+                        }}
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </Button>
+                </section>
             )}
             <Modal
                 isOpen={showConfirmModal}

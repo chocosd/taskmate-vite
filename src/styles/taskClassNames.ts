@@ -1,5 +1,5 @@
 export const baseTaskStyles =
-    'flex items-center justify-between p-3 rounded-md transition-all';
+    'flex items-start justify-between p-3 rounded-md transition-all';
 
 export const taskStyles = {
     default: `${baseTaskStyles} border-l-8 border-blue-500 bg-white dark:bg-zinc-900 hover:border-blue-400`,
