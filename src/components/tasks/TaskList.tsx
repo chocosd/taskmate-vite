@@ -1,7 +1,7 @@
 import { useTaskDragAndReorder } from '@hooks/useTaskDragAndReorder.hooks';
 import { Task } from '@models/task.model';
 import { getSubtaskStatuses } from '@utils/get-subtask-statuses';
-import TaskItem from './TaskItem';
+import TaskItem from './task-item/TaskItem';
 
 type TaskListProps = {
     tasks: Task[];

@@ -56,16 +56,33 @@ export function useSupabaseTasksService(
         tasksToSync: Task[],
         parentId?: string
     ) {
-        const isCreatedByMe = createdTasks.some(
-            (task) => task.id === parentId
+        let isCreatedByMe;
+        const isCreatedForMe = tasksToSync.every(
+            (task) => task.assigned_to_user_id === user.id
         );
 
-        if (isCreatedByMe) {
+        if (parentId) {
+            isCreatedByMe = createdTasks.some(
+                (task) => task.id === parentId
+            );
+        } else {
+            isCreatedByMe = tasksToSync.every(
+                (task) => task.created_by_user_id === user.id
+            );
+        }
+
+        if (isCreatedByMe && isCreatedForMe) {
             setTasks((prev) => [...prev, ...tasksToSync]);
             setCreatedTasks((prev) => [...prev, ...tasksToSync]);
-        } else {
-            setTasks((prev) => [...prev, ...tasksToSync]);
+            return;
         }
+
+        if (isCreatedByMe) {
+            setCreatedTasks((prev) => [...prev, ...tasksToSync]);
+            return;
+        }
+
+        setTasks((prev) => [...prev, ...tasksToSync]);
     }
 
     async function fetchCreatedTasks() {
@@ -163,14 +180,14 @@ export function useSupabaseTasksService(
             .select();
 
         if (!error && data?.length) {
-            const updatedTasks = (data as Task[]).filter(
-                (task) => task.assigned_to_user_id === user!.id
-            );
+            // const updatedTasks = (data as Task[]).filter(
+            //     (task) => task.assigned_to_user_id === user!.id
+            // );
 
-            if (updatedTasks.length) {
-                const parentId = updatedTasks.at(0)?.parent_id;
+            if (data.length) {
+                const parentId = data.at(0)?.parent_id;
 
-                syncTaskStatesBatch(updatedTasks, parentId);
+                syncTaskStatesBatch(data, parentId);
                 return;
             }
         }
@@ -227,7 +244,11 @@ export function useSupabaseTasksService(
     };
 
     const toggleTask = async (id: string) => {
-        const target = tasks.find((t) => t.id === id);
+        const findById = (task: Task) => task.id === id;
+
+        const target =
+            tasks.find(findById) ?? createdTasks.find(findById);
+
         if (!target) {
             return;
         }

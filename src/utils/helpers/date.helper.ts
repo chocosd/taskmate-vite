@@ -1,12 +1,6 @@
 import { DateTime, DurationUnit } from 'luxon';
 
-export default function DateHelper(date?: string | Date | DateTime) {
-    if (!date) {
-        return {
-            now: () => DateTime.now().toISO(),
-        };
-    }
-
+export default function DateHelper(date: string | Date | DateTime) {
     const dateTime = formatDatesToDateTime(date);
 
     return {
@@ -18,6 +12,15 @@ export default function DateHelper(date?: string | Date | DateTime) {
             dateTime.toFormat(formatString),
         toISO: () => dateTime.toISO(),
         raw: () => dateTime,
+        formatRelativeDueDate: () => {
+            const now = DateTime.now();
+
+            if (dateTime < now) {
+                return `Overdue: ${dateTime.toRelative({ base: now })}`;
+            }
+
+            return `Due: ${dateTime.toRelative({ base: now })}`;
+        },
     };
 }
 

@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 export type TaskTabsProps = {
     currentTab: TaskListView;
     setCurrentTab: (view: TaskListView) => void;
-}
+};
 
 export default function TaskTabs({
     setCurrentTab,

@@ -27,17 +27,15 @@ export default function TaskView() {
         setOptionsData,
         optionsData,
         currentTab,
-        setCurrentTab
+        setCurrentTab,
     } = useSupabaseTasks();
 
     const parentTask = tasks.find((t) => t.id === taskId);
 
     useEffect(() => {
-        if (currentTab === TaskListView.CreatedBy) {
-            setFilteredTasks(createdTasks);
-            return;
-        }
-        const result = tasks
+        const isCreatedBy = currentTab === TaskListView.CreatedBy;
+
+        const result = (isCreatedBy ? createdTasks : tasks)
             .filter((task) => {
                 if (taskId) {
                     return task.parent_id === taskId;
@@ -71,11 +69,14 @@ export default function TaskView() {
             <TaskInputBar setIsGenerating={setIsGenerating} />
 
             {!taskId && (
-                <TaskTabs setCurrentTab={setCurrentTab} currentTab={currentTab} />
+                <TaskTabs
+                    setCurrentTab={setCurrentTab}
+                    currentTab={currentTab}
+                />
             )}
 
             {loading || isGenerating ? (
-                <GeneratingIndicator /> 
+                <GeneratingIndicator />
             ) : (
                 <TaskList
                     tasks={filteredTasks}
