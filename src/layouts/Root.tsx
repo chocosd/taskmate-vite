@@ -1,8 +1,9 @@
 import ThemeToggle from '@components/ThemeToggle';
 import Logo from '@components/ui/Logo';
+import UserDropdown from '@components/UserDropdown';
 import { useAuth } from '@context/auth/useAuth';
 import { Routes } from '@routes/routes.enum';
-import { Bell, UserCircle2 } from 'lucide-react';
+import { Bell } from 'lucide-react';
 import { useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 
@@ -40,7 +41,7 @@ export default function Root() {
                     <div className="flex items-center gap-4">
                         <ThemeToggle />
                         <Bell className="h-5 w-5 hover:text-primary cursor-pointer" />
-                        <UserCircle2 className="h-6 w-6 hover:text-primary cursor-pointer" />
+                        <UserDropdown />
                     </div>
                 </header>
             )}

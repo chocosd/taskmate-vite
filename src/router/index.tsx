@@ -1,6 +1,7 @@
 import TaskView from '@components/tasks/task-view/TaskView';
 import Root from '@layouts/Root';
 import About from '@pages/About';
+import Connections from '@pages/Connections';
 import Dashboard from '@pages/Dashboard';
 import Login from '@pages/Login';
 import Profile from '@pages/Profile';
@@ -33,6 +34,10 @@ export const router = createBrowserRouter(
                     <Route index element={<TaskView />} />
                     <Route path=":taskId" element={<TaskView />} />
                 </Route>
+                <Route
+                    path={Routes.Connections}
+                    element={<Connections />}
+                />
             </Route>
             <Route path={Routes.Profile} element={<Profile />} />
         </Route>

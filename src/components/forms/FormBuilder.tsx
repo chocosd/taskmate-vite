@@ -89,7 +89,6 @@ export default function FormBuilder<
                 }
                 return (
                     <NumberInput
-                        key={String(field.name)}
                         value={value as number}
                         onChange={setValue as (val: number) => void}
                         {...commonProps}
@@ -105,7 +104,6 @@ export default function FormBuilder<
 
                 return (
                     <PasswordInput
-                        key={String(field.name)}
                         {...commonProps}
                         value={value as string}
                         onChange={setValue as (val: string) => void}
@@ -119,7 +117,6 @@ export default function FormBuilder<
 
                 return (
                     <TextInput
-                        key={String(field.name)}
                         {...commonProps}
                         value={value as string}
                         onChange={setValue as (val: string) => void}
@@ -132,7 +129,6 @@ export default function FormBuilder<
                 }
                 return (
                     <RadioInput
-                        key={String(field.name)}
                         {...commonProps}
                         options={field.options}
                         value={value as string | number}
@@ -149,7 +145,6 @@ export default function FormBuilder<
 
                 return (
                     <AutocompleteInput
-                        key={String(field.name)}
                         value={value as AutocompleteOption | null}
                         onChange={
                             setValue as (
@@ -167,7 +162,6 @@ export default function FormBuilder<
                 }
                 return (
                     <TextAreaInput
-                        key={String(field.name)}
                         value={value as string}
                         onChange={setValue as (val: string) => void}
                         {...commonProps}
@@ -181,7 +175,6 @@ export default function FormBuilder<
                 }
                 return (
                     <DatePickerInput
-                        key={String(field.name)}
                         value={value as string}
                         onChange={setValue as (val: string) => void}
                         {...commonProps}
@@ -194,7 +187,6 @@ export default function FormBuilder<
                 }
                 return (
                     <SelectInput
-                        key={String(field.name)}
                         value={value as string | number}
                         onChange={
                             setValue as (val: string | number) => void
@@ -210,7 +202,6 @@ export default function FormBuilder<
                 }
                 return (
                     <CheckboxInput
-                        key={String(field.name)}
                         checked={(value as boolean) ?? false}
                         onChange={setValue as (val: boolean) => void}
                         {...commonProps}
@@ -248,7 +239,10 @@ export default function FormBuilder<
                 onSubmit={handleSubmit}
             >
                 {fields.map((field) => (
-                    <div className="flex-auto w-full">
+                    <div
+                        key={String(field.name)}
+                        className="flex-auto w-full"
+                    >
                         {renderField(field)}
                     </div>
                 ))}

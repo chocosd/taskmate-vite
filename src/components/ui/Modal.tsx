@@ -37,7 +37,7 @@ export default function Modal({
                     {title}
                 </h2>
                 <div className="text-sm mb-6">{children}</div>
-                <div className="flex justify-end gap-2">
+                <div className="flex justify-end flex-wrap gap-2">
                     <Button
                         action={onClose}
                         classes="px-4 py-1 rounded bg-zinc-700 hover:bg-zinc-600 text-sm"

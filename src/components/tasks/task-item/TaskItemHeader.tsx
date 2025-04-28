@@ -1,4 +1,5 @@
 import ProfilePicture from '@components/ui/ProfilePicture';
+import { useAuth } from '@context/auth/useAuth';
 import { Task, TaskPriority } from '@models/task.model';
 import DateHelper from '@utils/helpers/date.helper';
 
@@ -21,6 +22,8 @@ export default function TaskItemHeader({
     onCheckboxToggle,
     onRenameKeyDown,
 }: TaskItemHeaderProps) {
+    const { profile } = useAuth();
+
     const title = showEditTitle ? (
         <input
             type="text"
@@ -75,10 +78,7 @@ export default function TaskItemHeader({
                     onChange={onCheckboxToggle}
                 />
                 <ProfilePicture
-                    user={{
-                        profile_picture: '',
-                        email: 'hello@stevendix.co.uk',
-                    }}
+                    user={profile!}
                     size={22}
                     className="mt-[4px]"
                 />

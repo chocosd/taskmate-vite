@@ -1,5 +1,6 @@
 import { useTaskDragAndReorder } from '@hooks/useTaskDragAndReorder.hooks';
 import { Task } from '@models/task.model';
+import EmptyData from '@ui/EmptyData';
 import { getSubtaskStatuses } from '@utils/get-subtask-statuses';
 import TaskItem from './task-item/TaskItem';
 
@@ -21,18 +22,20 @@ export default function TaskList({ tasks, allTasks }: TaskListProps) {
 
     return (
         <ul className="space-y-2">
-            {availableTasks
-                ? enhancedTasks.map((task) => (
-                      <TaskItem
-                          key={task.id}
-                          task={task}
-                          onDragStart={() => onDragStart(task)}
-                          onDragOver={(e) => onDragOver(e, task)}
-                          onDrop={onDrop}
-                          isDragging={draggingId === task.id}
-                      />
-                  ))
-                : 'nothing to see here'}
+            {availableTasks ? (
+                enhancedTasks.map((task) => (
+                    <TaskItem
+                        key={task.id}
+                        task={task}
+                        onDragStart={() => onDragStart(task)}
+                        onDragOver={(e) => onDragOver(e, task)}
+                        onDrop={onDrop}
+                        isDragging={draggingId === task.id}
+                    />
+                ))
+            ) : (
+                <EmptyData />
+            )}
         </ul>
     );
 }
