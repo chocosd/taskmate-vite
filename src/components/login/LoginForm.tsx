@@ -26,7 +26,7 @@ export default function LoginForm(): ReactNode {
     const { showToast } = useToast();
     const navigate = useNavigate();
     const location = useLocation();
-
+        
     const [signUpModel, setSignUpModel] = useState<SignUpModel>({
         email: '',
         matchingPassword: '',
@@ -120,6 +120,8 @@ export default function LoginForm(): ReactNode {
                 setAwaitingEmailConfirmationNotice(false);
                 navigate(from, { replace: true });
             }
+            await signUp(signUpModel);
+            navigate(from, { replace: true });
         } catch (err: unknown) {
             showToast(
                 ToastType.Error,
