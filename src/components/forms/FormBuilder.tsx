@@ -248,7 +248,10 @@ export default function FormBuilder<
                 onSubmit={handleSubmit}
             >
                 {fields.map((field) => (
-                    <div className="flex-auto w-full">
+                    <div
+                        key={String(field.name)}
+                        className="flex-auto w-full"
+                    >
                         {renderField(field)}
                     </div>
                 ))}

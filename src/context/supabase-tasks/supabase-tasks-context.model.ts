@@ -13,6 +13,11 @@ export type TasksWithoutIds = Omit<
     'id' | 'created_by_user_id' | 'priority' | 'due_date'
 >;
 
+export enum Status {
+    Accepted = 'accepted',
+    Pending = 'pending',
+}
+
 export type ConnectionsUser = {
     connection_email: string;
     connection_id: string;

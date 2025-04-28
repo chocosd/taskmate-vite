@@ -22,6 +22,11 @@ export type LogInModel = {
 };
 
 export default function LoginForm(): ReactNode {
+    const { login, signUp } = useAuth();
+    const { showToast } = useToast();
+    const navigate = useNavigate();
+    const location = useLocation();
+        
     const [signUpModel, setSignUpModel] = useState<SignUpModel>({
         email: '',
         matchingPassword: '',
@@ -35,12 +40,11 @@ export default function LoginForm(): ReactNode {
     const [view, setView] = useState<LoginView>(
         LoginView.LoginInForm
     );
-    const { login, signUp } = useAuth();
-    const { showToast } = useToast();
-    const navigate = useNavigate();
-    const location = useLocation();
-
     const [isLoading, setIsLoading] = useState(false);
+    const [
+        awaitingEmailConfirmationNotice,
+        setAwaitingEmailConfirmationNotice,
+    ] = useState(false);
 
     const from =
         location.state?.from?.pathname ?? `/${Routes.Dashboard}`;
@@ -107,6 +111,15 @@ export default function LoginForm(): ReactNode {
         setIsLoading(true);
 
         try {
+            const { needsEmailConfirmation } =
+                await signUp(signUpModel);
+
+            if (needsEmailConfirmation) {
+                setAwaitingEmailConfirmationNotice(true);
+            } else {
+                setAwaitingEmailConfirmationNotice(false);
+                navigate(from, { replace: true });
+            }
             await signUp(signUpModel);
             navigate(from, { replace: true });
         } catch (err: unknown) {
@@ -178,8 +191,13 @@ export default function LoginForm(): ReactNode {
                     </span>
                 </FormBuilder>
             )}
+            <></>
         </>
     );
 
-    return isLoading ? 'loading...' : loginView;
+    return isLoading
+        ? 'loading...'
+        : awaitingEmailConfirmationNotice
+          ? 'awaiting email'
+          : loginView;
 }

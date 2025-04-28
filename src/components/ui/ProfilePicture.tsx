@@ -1,11 +1,8 @@
-import { User } from '@supabase/supabase-js';
-
-export type UserExtended = Partial<User> & {
-    profile_picture?: string | null;
-};
+import { Profile } from '@models/profile.model';
+import { User } from 'lucide-react';
 
 export type ProfilePictureProps = {
-    user: UserExtended;
+    user: Profile | null;
     size?: number;
     className?: string;
 };
@@ -24,14 +21,20 @@ export default function ProfilePicture({
     size = 32,
     className,
 }: ProfilePictureProps) {
-    const initials = user.email?.[0]?.toUpperCase() ?? '?';
-    const bgColor = stringToColor(user.email ?? 'default');
+    if (!user) {
+        return <User />;
+    }
 
-    if (user.profile_picture) {
+    const name = user?.username ?? user?.email;
+
+    const initials = name?.[0]?.toUpperCase() ?? '?';
+    const bgColor = stringToColor(name ?? 'default');
+
+    if (user?.profile_picture) {
         return (
             <img
-                src={user.profile_picture}
-                alt={user.email}
+                src={user?.profile_picture}
+                alt={name}
                 className="rounded-full object-cover"
                 style={{
                     width: size,
