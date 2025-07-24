@@ -1,6 +1,8 @@
+import TasksProvider from '@components/providers/TasksProvider';
 import TaskView from '@components/tasks/task-view/TaskView';
 import Root from '@layouts/Root';
 import About from '@pages/About';
+import Calendar from '@pages/Calendar';
 import Connections from '@pages/Connections';
 import Dashboard from '@pages/Dashboard';
 import Login from '@pages/Login';
@@ -27,13 +29,25 @@ export const router = createBrowserRouter(
             <Route path={Routes.Login} element={<Login />} />
 
             <Route element={<ProtectedRoute />}>
-                <Route
-                    path={Routes.Dashboard}
-                    element={<Dashboard />}
-                >
-                    <Route index element={<TaskView />} />
-                    <Route path=":taskId" element={<TaskView />} />
+                {/* Routes that need tasks context */}
+                <Route element={<TasksProvider />}>
+                    <Route
+                        path={Routes.Dashboard}
+                        element={<Dashboard />}
+                    >
+                        <Route index element={<TaskView />} />
+                        <Route
+                            path=":taskId"
+                            element={<TaskView />}
+                        />
+                    </Route>
+                    <Route
+                        path={Routes.Calendar}
+                        element={<Calendar />}
+                    />
                 </Route>
+
+                {/* Routes that don't need tasks context */}
                 <Route
                     path={Routes.Connections}
                     element={<Connections />}

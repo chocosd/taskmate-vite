@@ -1,11 +1,14 @@
+import Button from '@components/ui/Button';
 import FormModal from '@components/ui/FormModal';
 import { useSupabaseTasks } from '@context/supabase-tasks/useSupabaseTasks';
 import { TaskListView } from '@enums/task-list-view.enum';
 import { Task } from '@models/task.model';
+import { Routes } from '@routes/routes.enum';
 import GeneratingIndicator from '@ui/GeneratingIndicator';
 import { createOptionFields } from '@utils/functions/create-option-fields';
+import { Calendar } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import TaskList from '../TaskList';
 import TaskHeader from './TaskHeader';
 import TaskInputBar from './TaskInputBar';
@@ -13,6 +16,7 @@ import TaskTabs from './TaskTabs';
 
 export default function TaskView() {
     const { taskId } = useParams<{ taskId: string }>();
+    const navigate = useNavigate();
 
     const [isGenerating, setIsGenerating] = useState(false);
     const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
@@ -62,6 +66,14 @@ export default function TaskView() {
         }
     };
 
+    const handleCalendarNavigation = () => {
+        navigate(`/${Routes.Calendar}`);
+    };
+
+    const incompleteTasks = tasks.filter(
+        (t) => !t.completed && !t.parent_id
+    );
+
     return (
         <div className="w-full max-w-2xl mx-auto p-4">
             <TaskHeader parentTask={parentTask} taskId={taskId} />
@@ -69,10 +81,40 @@ export default function TaskView() {
             <TaskInputBar setIsGenerating={setIsGenerating} />
 
             {!taskId && (
-                <TaskTabs
-                    setCurrentTab={setCurrentTab}
-                    currentTab={currentTab}
-                />
+                <>
+                    <TaskTabs
+                        setCurrentTab={setCurrentTab}
+                        currentTab={currentTab}
+                    />
+
+                    {/* Calendar CTA - only show when there are tasks and not viewing subtasks */}
+                    {incompleteTasks.length > 0 && (
+                        <div className="mb-4 p-3 bg-gradient-to-r from-purple-600/10 to-blue-600/10 border border-purple-500/20 rounded-lg">
+                            <div className="flex items-center justify-between">
+                                <div className="flex-1">
+                                    <h3 className="text-sm font-medium text-white mb-1">
+                                        Organize Your Schedule
+                                    </h3>
+                                    <p className="text-xs text-zinc-400">
+                                        Let AI schedule your{' '}
+                                        {incompleteTasks.length} tasks
+                                        around your calendar
+                                    </p>
+                                </div>
+                                <Button
+                                    action={handleCalendarNavigation}
+                                    classes="ml-3 px-3 py-1 text-xs bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-md hover:opacity-90 transition-opacity"
+                                    options={{
+                                        overrideClasses: true,
+                                    }}
+                                >
+                                    <Calendar className="w-3 h-3" />
+                                    Calendar
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                </>
             )}
 
             {loading || isGenerating ? (
