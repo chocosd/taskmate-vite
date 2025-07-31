@@ -1,6 +1,7 @@
 import { CalendarEvent, ScheduledTask } from '@models/calendar.model';
 import { AlertCircle, Calendar, Clock } from 'lucide-react';
 import { DateTime } from 'luxon';
+import { useEffect, useState } from 'react';
 
 interface DayViewProps {
     selectedDate: Date;
@@ -13,29 +14,39 @@ export default function DayView({
     events,
     scheduledTasks,
 }: DayViewProps) {
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        // Reset visibility when date changes
+        setIsVisible(false);
+        const timer = setTimeout(() => setIsVisible(true), 100);
+        return () => clearTimeout(timer);
+    }, [selectedDate]);
+
     const getEventsForDate = (date: Date) => {
-        const dateStr =
-            DateTime.fromJSDate(date).toFormat('yyyy-MM-dd');
         return events
-            .filter(
-                (event) =>
-                    DateTime.fromJSDate(event.start).toFormat(
-                        'yyyy-MM-dd'
-                    ) === dateStr
-            )
+            .filter((event) => {
+                const eventStart = DateTime.fromJSDate(event.start);
+                const eventStartDate = eventStart.startOf('day');
+                const dateStartOfDay =
+                    DateTime.fromJSDate(date).startOf('day');
+
+                return eventStartDate.equals(dateStartOfDay);
+            })
             .sort((a, b) => a.start.getTime() - b.start.getTime());
     };
 
     const getTasksForDate = (date: Date) => {
-        const dateStr =
-            DateTime.fromJSDate(date).toFormat('yyyy-MM-dd');
         return scheduledTasks
-            .filter(
-                (task) =>
-                    DateTime.fromJSDate(task.start).toFormat(
-                        'yyyy-MM-dd'
-                    ) === dateStr
-            )
+            .filter((task) => {
+                const taskStart = DateTime.fromJSDate(task.start);
+                const taskStartDate = taskStart.startOf('day');
+                const dateStartOfDay =
+                    DateTime.fromJSDate(date).startOf('day');
+
+                // Task starts on this date
+                return taskStartDate.equals(dateStartOfDay);
+            })
             .sort((a, b) => a.start.getTime() - b.start.getTime());
     };
 
@@ -49,11 +60,14 @@ export default function DayView({
     const formatDuration = (start: Date, end: Date) => {
         const durationMinutes =
             (end.getTime() - start.getTime()) / (1000 * 60);
+
         if (durationMinutes < 60) {
             return `${Math.round(durationMinutes)}min`;
         }
+
         const hours = Math.floor(durationMinutes / 60);
         const minutes = Math.round(durationMinutes % 60);
+
         return minutes > 0 ? `${hours}h ${minutes}min` : `${hours}h`;
     };
 
@@ -76,19 +90,28 @@ export default function DayView({
     const dayTasks = getTasksForDate(selectedDate);
 
     return (
-        <div className="space-y-4">
-            {/* Calendar Events */}
+        <div
+            className={`space-y-4 transition-all duration-500 ease-out ${
+                isVisible
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-4'
+            }`}
+        >
             {dayEvents.length > 0 && (
-                <div>
+                <div className="animate-in slide-in-from-bottom-2 duration-500">
                     <h3 className="text-lg font-semibold text-zinc-300 mb-2 flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
                         Calendar Events
                     </h3>
                     <div className="space-y-2">
-                        {dayEvents.map((event) => (
+                        {dayEvents.map((event, index) => (
                             <div
                                 key={event.id}
-                                className="bg-blue-600 border border-blue-500 rounded p-3 text-white"
+                                className="bg-blue-600 border border-blue-500 rounded p-3 text-white transition-all duration-300 ease-out animate-in slide-in-from-bottom-2"
+                                style={{
+                                    animationDelay: `${index * 100}ms`,
+                                    animationFillMode: 'both',
+                                }}
                             >
                                 <div className="flex justify-between items-start mb-1">
                                     <div className="font-medium">
@@ -120,16 +143,20 @@ export default function DayView({
 
             {/* Scheduled Tasks */}
             {dayTasks.length > 0 && (
-                <div>
+                <div className="animate-in slide-in-from-bottom-2 duration-500 delay-200">
                     <h3 className="text-lg font-semibold text-zinc-300 mb-2 flex items-center gap-2">
                         <Clock className="w-4 h-4" />
                         Scheduled Tasks
                     </h3>
                     <div className="space-y-2">
-                        {dayTasks.map((task) => (
+                        {dayTasks.map((task, index) => (
                             <div
                                 key={task.taskId}
-                                className={`border rounded p-3 text-white ${getPriorityColor(task.priority)}`}
+                                className={`border rounded p-3 text-white transition-all duration-300 ease-out animate-in slide-in-from-bottom-2 ${getPriorityColor(task.priority)}`}
+                                style={{
+                                    animationDelay: `${(index + dayEvents.length) * 100}ms`,
+                                    animationFillMode: 'both',
+                                }}
                             >
                                 <div className="flex justify-between items-start mb-1">
                                     <div className="font-medium">
@@ -154,8 +181,8 @@ export default function DayView({
                 </div>
             )}
 
-            {dayEvents.length === 0 && dayTasks.length === 0 && (
-                <div className="text-center text-zinc-400 py-8">
+            {!dayEvents.length && !dayTasks.length && (
+                <div className="text-center text-zinc-400 py-8 animate-in fade-in duration-500 delay-300">
                     <AlertCircle className="w-12 h-12 mx-auto mb-2 opacity-50" />
                     <p>No events or tasks scheduled for this day</p>
                 </div>

@@ -41,6 +41,7 @@ export type SupabaseTasksContextType = {
     addTasksBatch: (tasks: TasksWithoutIds[]) => Promise<void>;
     reorderTasks: (reordered: Task[]) => Promise<void>;
     renameTask: (id: string, title: string) => Promise<void>;
+    updateTask: (id: string, updates: Partial<Task>) => Promise<void>;
     deleteSubTasks: (id: string) => Promise<void>;
     deleteTaskWithSubtasks: (id: string) => Promise<void>;
     updateSubtaskTitles: (

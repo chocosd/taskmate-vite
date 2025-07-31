@@ -134,6 +134,7 @@ export type FormField<TModel> = {
               | TextAreaField<TModel, K>
               | SelectField<TModel, K>
               | RadioField<TModel, K>
+              | DateTimeField<TModel, K>
         : TModel[K] extends number
           ?
                 | NumberField<TModel, K>

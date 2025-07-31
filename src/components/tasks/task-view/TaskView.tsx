@@ -6,6 +6,7 @@ import { Task } from '@models/task.model';
 import { Routes } from '@routes/routes.enum';
 import GeneratingIndicator from '@ui/GeneratingIndicator';
 import { createOptionFields } from '@utils/functions/create-option-fields';
+import { TaskDateUtils } from '@utils/helpers/date.helper';
 import { Calendar } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -70,9 +71,8 @@ export default function TaskView() {
         navigate(`/${Routes.Calendar}`);
     };
 
-    const incompleteTasks = tasks.filter(
-        (t) => !t.completed && !t.parent_id
-    );
+    // Filter out overdue tasks for calendar scheduling
+    const schedulableTasks = TaskDateUtils.getSchedulableTasks(tasks);
 
     return (
         <div className="w-full max-w-2xl mx-auto p-4">
@@ -87,8 +87,8 @@ export default function TaskView() {
                         currentTab={currentTab}
                     />
 
-                    {/* Calendar CTA - only show when there are tasks and not viewing subtasks */}
-                    {incompleteTasks.length > 0 && (
+                    {/* Calendar CTA - only show when there are schedulable tasks and not viewing subtasks */}
+                    {schedulableTasks.length > 0 && (
                         <div className="mb-4 p-3 bg-gradient-to-r from-purple-600/10 to-blue-600/10 border border-purple-500/20 rounded-lg">
                             <div className="flex items-center justify-between">
                                 <div className="flex-1">
@@ -97,13 +97,13 @@ export default function TaskView() {
                                     </h3>
                                     <p className="text-xs text-zinc-400">
                                         Let AI schedule your{' '}
-                                        {incompleteTasks.length} tasks
-                                        around your calendar
+                                        {schedulableTasks.length}{' '}
+                                        tasks around your calendar
                                     </p>
                                 </div>
                                 <Button
                                     action={handleCalendarNavigation}
-                                    classes="ml-3 px-3 py-1 text-xs bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-md hover:opacity-90 transition-opacity"
+                                    classes="ml-3 px-3 py-1 text-xs bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-md hover:opacity-90 transition-opacity inline-flex items-center gap-1"
                                     options={{
                                         overrideClasses: true,
                                     }}

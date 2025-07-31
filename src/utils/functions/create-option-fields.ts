@@ -5,11 +5,16 @@ import { ConnectionsUser } from '@context/supabase-tasks/supabase-tasks-context.
 
 export const createOptionFields = (
     connections: ConnectionsUser[]
-): FormField[] => [
+): FormField<{
+    assignee: string;
+    due_date: Date;
+    priority: string;
+}>[] => [
     {
         type: FormFieldType.AUTOCOMPLETE,
         name: 'assignee',
         label: 'Assign To',
+        options: [],
         config: {
             loadOptions: (search: string) =>
                 Promise.resolve(

@@ -1,6 +1,9 @@
+import CalendarOptionsModal from '@components/calendar/CalendarOptionsModal';
 import CalendarSchedulingSection from '@components/calendar/CalendarSchedulingSection';
 import CalendarUploadSection from '@components/calendar/CalendarUploadSection';
 import CalendarView from '@components/calendar/CalendarView';
+import { CalendarOptionsProvider } from '@context/calendar-options/calendar-options.context';
+import { useCalendarOptions } from '@context/calendar-options/useCalendarOptions';
 import { useSupabaseTasks } from '@context/supabase-tasks/useSupabaseTasks';
 import { useToast } from '@context/toast/useToast';
 import { ToastType } from '@enums/toast-type.enum';
@@ -11,7 +14,7 @@ import { scheduleTasksWithAI } from '@utils/schedule-tasks-with-ai';
 import { Download } from 'lucide-react';
 import { useState } from 'react';
 
-export default function Calendar() {
+function CalendarContent() {
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [scheduledTasks, setScheduledTasks] = useState<
         ScheduledTask[]
@@ -21,6 +24,7 @@ export default function Calendar() {
         useState(false);
     const { tasks } = useSupabaseTasks();
     const { showToast } = useToast();
+    const { options } = useCalendarOptions();
 
     const handleFileUpload = async (
         event: React.ChangeEvent<HTMLInputElement>
@@ -46,7 +50,7 @@ export default function Calendar() {
     };
 
     const handleScheduleTasks = async () => {
-        if (tasks.length === 0) {
+        if (!tasks.length) {
             showToast(
                 ToastType.Error,
                 'No tasks available to schedule'
@@ -56,7 +60,11 @@ export default function Calendar() {
 
         setIsProcessing(true);
         try {
-            const result = await scheduleTasksWithAI(tasks, events);
+            const result = await scheduleTasksWithAI(
+                tasks,
+                events,
+                options
+            );
             setScheduledTasks(result.scheduledTasks);
 
             if (result.feasible) {
@@ -92,24 +100,49 @@ export default function Calendar() {
         );
     };
 
+    const handleUpdateEvent = (updatedEvent: CalendarEvent) => {
+        setEvents((prevEvents) =>
+            prevEvents.map((event) =>
+                event.id === updatedEvent.id ? updatedEvent : event
+            )
+        );
+        showToast(ToastType.Success, 'Event updated successfully');
+    };
+
+    const handleUpdateTask = (updatedTask: ScheduledTask) => {
+        setScheduledTasks((prevTasks) =>
+            prevTasks.map((task) =>
+                task.taskId === updatedTask.taskId
+                    ? updatedTask
+                    : task
+            )
+        );
+        showToast(ToastType.Success, 'Task updated successfully');
+    };
+
+    const handleDeleteEvent = (eventId: string) => {
+        setEvents((prevEvents) =>
+            prevEvents.filter((event) => event.id !== eventId)
+        );
+        showToast(ToastType.Success, 'Event deleted successfully');
+    };
+
+    const handleDeleteTask = (taskId: string) => {
+        setScheduledTasks((prevTasks) =>
+            prevTasks.filter((task) => task.taskId !== taskId)
+        );
+        showToast(ToastType.Success, 'Task deleted successfully');
+    };
+
     return (
-        <div className="max-w-7xl mx-auto p-6 space-y-6">
+        <div className="max-w-7xl mx-auto p-6 space-y-4">
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold text-zinc-100">
                     Calendar
                 </h1>
-                {scheduledTasks.length > 0 && (
-                    <button
-                        onClick={handleDownloadICS}
-                        className="flex items-center gap-2 px-4 py-2 bg-zinc-700 hover:bg-zinc-600 text-white rounded-lg transition-colors"
-                    >
-                        <Download className="w-4 h-4" />
-                        Download ICS
-                    </button>
-                )}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 <CalendarUploadSection
                     isProcessing={isProcessing}
                     hasUploadedCalendar={hasUploadedCalendar}
@@ -123,12 +156,41 @@ export default function Calendar() {
                     calendarEvents={events}
                     onScheduleTasks={handleScheduleTasks}
                 />
+                {!!scheduledTasks.length && (
+                    <div className="bg-zinc-800 rounded-lg p-3 flex-1">
+                        <h2 className="text-sm font-medium text-white mb-2 flex items-center gap-2">
+                            <Download className="w-3 h-3" />
+                            Export
+                        </h2>
+                        <button
+                            onClick={handleDownloadICS}
+                            className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-zinc-700 hover:bg-zinc-600 text-white rounded-lg transition-colors text-sm"
+                        >
+                            <Download className="w-4 h-4" />
+                            Download ICS
+                        </button>
+                    </div>
+                )}
             </div>
 
             <CalendarView
                 events={events}
                 scheduledTasks={scheduledTasks}
+                onUpdateEvent={handleUpdateEvent}
+                onUpdateTask={handleUpdateTask}
+                onDeleteEvent={handleDeleteEvent}
+                onDeleteTask={handleDeleteTask}
             />
+
+            <CalendarOptionsModal />
         </div>
+    );
+}
+
+export default function Calendar() {
+    return (
+        <CalendarOptionsProvider>
+            <CalendarContent />
+        </CalendarOptionsProvider>
     );
 }

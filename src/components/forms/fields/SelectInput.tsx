@@ -21,6 +21,8 @@ export default function SelectInput({
     options,
     error,
 }: SelectInputProps) {
+    console.log(options);
+
     return (
         <BaseInput
             label={label}
@@ -34,7 +36,7 @@ export default function SelectInput({
                 disabled={disabled}
                 className={inputClasses}
             >
-                {options.map((opt, i) => (
+                {options?.map((opt, i) => (
                     <option key={i} value={opt.value}>
                         {opt.label}
                     </option>
