@@ -1,7 +1,9 @@
 import Button from '@components/ui/Button';
+import { useCalendarOptions } from '@context/calendar-options/useCalendarOptions';
 import { CalendarEvent } from '@models/calendar.model';
 import { Task } from '@models/task.model';
-import { Bot, Calendar, ListTodo } from 'lucide-react';
+import { TaskDateUtils } from '@utils/helpers/date.helper';
+import { Bot, Calendar, ListTodo, Settings } from 'lucide-react';
 
 interface CalendarSchedulingSectionProps {
     isProcessing: boolean;
@@ -18,17 +20,29 @@ export default function CalendarSchedulingSection({
     calendarEvents,
     onScheduleTasks,
 }: CalendarSchedulingSectionProps) {
+    const { openOptions } = useCalendarOptions();
     const canSchedule =
         !isProcessing && hasUploadedCalendar && tasks.length > 0;
 
-    return (
-        <div className="bg-zinc-800 rounded-lg p-4 flex-1">
-            <h2 className="text-lg font-medium text-white mb-3 flex items-center gap-2">
-                <Bot className="w-4 h-4" />
-                AI Scheduling
-            </h2>
+    const schedulableTasks = TaskDateUtils.getSchedulableTasks(tasks);
 
-            <div className="space-y-3">
+    return (
+        <div className="bg-zinc-800 rounded-lg p-3 flex-1">
+            <div className="flex items-center justify-between mb-2">
+                <h2 className="text-sm font-medium text-white flex items-center gap-2">
+                    <Bot className="w-3 h-3" />
+                    AI Scheduling
+                </h2>
+                <Button
+                    action={openOptions}
+                    variant="secondary"
+                    size="small"
+                >
+                    <Settings className="w-3 h-3" />
+                </Button>
+            </div>
+
+            <div className="space-y-2">
                 <div className="flex gap-2 flex-wrap">
                     <div className="flex items-center gap-1 bg-zinc-700 rounded-full px-2 py-1 text-xs">
                         <Calendar className="w-3 h-3 text-blue-400" />
@@ -40,7 +54,7 @@ export default function CalendarSchedulingSection({
                         <ListTodo className="w-3 h-3 text-purple-400" />
                         <span className="text-zinc-300">
                             {
-                                tasks.filter(
+                                schedulableTasks.filter(
                                     (t) =>
                                         !t.completed && !t.parent_id
                                 ).length
@@ -52,12 +66,13 @@ export default function CalendarSchedulingSection({
 
                 <Button
                     action={canSchedule ? onScheduleTasks : undefined}
+                    disabled={!canSchedule}
                     classes={
                         canSchedule
-                            ? 'w-full text-white px-4 py-2 rounded-md swipe-gradient shadow-md hover:brightness-110'
-                            : 'w-full px-4 py-2 rounded-md bg-zinc-600 text-zinc-400 cursor-not-allowed'
+                            ? 'w-full swipe-gradient shadow-md hover:brightness-110 inline-flex items-center justify-center gap-1 gap-1'
+                            : 'w-full inline-flex items-center gap-1'
                     }
-                    options={{ overrideClasses: true }}
+                    options={{ overrideClasses: canSchedule }}
                 >
                     <Bot className="w-4 h-4" />
                     {isProcessing

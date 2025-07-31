@@ -15,6 +15,8 @@ export async function parseICSFile(
     while (i < lines.length) {
         const line = lines[i];
 
+        console.log('line', line);
+
         if (line === 'BEGIN:VEVENT') {
             currentEvent = {};
         } else if (line === 'END:VEVENT' && currentEvent) {

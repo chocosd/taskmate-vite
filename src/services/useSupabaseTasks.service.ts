@@ -324,6 +324,29 @@ export function useSupabaseTasksService(
         }
     };
 
+    const updateTask = async (id: string, updates: Partial<Task>) => {
+        const findById = (task: Task) => task.id === id;
+
+        const target =
+            tasks.find(findById) ?? createdTasks.find(findById);
+
+        if (!target) {
+            return;
+        }
+
+        const { data, error } = await supabase
+            .from('tasks')
+            .update(updates)
+            .eq('id', id)
+            .select();
+
+        if (!error && data?.[0]) {
+            syncTaskStates(id, (tasks) =>
+                tasks.map((task) => (task.id === id ? data[0] : task))
+            );
+        }
+    };
+
     const reorderTasks = async (reordered: Task[]) => {
         const updatedTasks = getTasksWithUpdatedOrder(
             tasks,
@@ -384,6 +407,7 @@ export function useSupabaseTasksService(
         addTasksBatch,
         reorderTasks,
         renameTask,
+        updateTask,
         updateSubtaskTitles,
         toggleTask,
         deleteTaskWithSubtasks,

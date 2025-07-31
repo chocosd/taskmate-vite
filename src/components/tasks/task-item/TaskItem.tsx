@@ -1,4 +1,5 @@
 import Button from '@components/ui/Button';
+import { useAuth } from '@context/auth/useAuth';
 import { TasksWithoutIds } from '@context/supabase-tasks/supabase-tasks-context.model';
 import { useSupabaseTasks } from '@context/supabase-tasks/useSupabaseTasks';
 import { useToast } from '@context/toast/useToast';
@@ -14,6 +15,7 @@ import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TaskActionsBar from './TaskActionsBar';
+import TaskEditModal from './TaskEditModal';
 import TaskItemHeader from './TaskItemHeader';
 
 type TaskItemProps = {
@@ -41,6 +43,7 @@ export default function TaskItem({
         addTask,
         deleteTask,
     } = useSupabaseTasks();
+    const { user } = useAuth();
     const { showToast } = useToast();
 
     const [isSubtaskInputOpen, setSubtaskInputOpen] = useState(false);
@@ -59,6 +62,8 @@ export default function TaskItem({
     const [pendingNewTitle, setPendingNewTitle] = useState('');
     const [showEditTitle, setShowEditTitle] = useState(false);
     const [inputTitle, setInputTitle] = useState(task.title);
+    const [isEditTaskModalOpen, setIsEditTaskModalOpen] =
+        useState(false);
 
     const navigate = useNavigate();
 
@@ -111,6 +116,10 @@ export default function TaskItem({
         e?.preventDefault();
 
         setShowEditTitle((prev) => !prev);
+    };
+
+    const handleEditTask = () => {
+        setIsEditTaskModalOpen(true);
     };
 
     const handleRenameAttempt = (
@@ -280,9 +289,12 @@ export default function TaskItem({
                     </div>
                 </div>
                 <TaskActionsBar
+                    task={task}
+                    user={user}
                     onAddSubtask={handleManualSubtask}
                     onDelete={handleTaskDeleteOnChange}
                     onEdit={toggleRenameEdit}
+                    onEditTask={handleEditTask}
                     onGenerateSubtasks={handleAiSubtask}
                 />
             </li>
@@ -330,6 +342,11 @@ export default function TaskItem({
                     `This task has ${task.subtasks?.length} subtasks. Renaming this may make these tasks redundant.`
                 )}
             </Modal>
+            <TaskEditModal
+                task={task}
+                isOpen={isEditTaskModalOpen}
+                onClose={() => setIsEditTaskModalOpen(false)}
+            />
         </>
     );
 }

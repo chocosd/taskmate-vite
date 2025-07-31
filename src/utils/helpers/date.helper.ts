@@ -1,6 +1,112 @@
 import { CalendarEvent, ScheduledTask } from '@models/calendar.model';
 import { DateTime, DurationUnit } from 'luxon';
 
+// Task-specific date utilities
+export const TaskDateUtils = {
+    /**
+     * Safely parse a task due_date to ISO string for form usage
+     * @param dateString - The date string from the task (can be null/undefined)
+     * @returns ISO string or empty string if invalid/null
+     */
+    parseTaskDateToISO: (
+        dateString: string | null | undefined
+    ): string => {
+        if (
+            !dateString ||
+            dateString === 'null' ||
+            dateString === 'undefined'
+        ) {
+            return '';
+        }
+
+        try {
+            const parsed = DateTime.fromISO(dateString);
+
+            if (parsed.isValid) {
+                return parsed.toISO() || '';
+            } else {
+                // Try fallback parsing for different date formats
+                const fallbackParsed = new Date(dateString);
+                if (!isNaN(fallbackParsed.getTime())) {
+                    return (
+                        DateTime.fromJSDate(fallbackParsed).toISO() ||
+                        ''
+                    );
+                }
+            }
+        } catch (error) {
+            console.error(
+                'TaskDateUtils.parseTaskDateToISO error:',
+                error
+            );
+        }
+
+        return '';
+    },
+
+    /**
+     * Convert a Date object to ISO string for API submission
+     * @param date - The Date object to convert
+     * @returns ISO string or null if invalid
+     */
+    dateToISO: (date: Date | null | undefined): string | null => {
+        if (!date) return null;
+
+        try {
+            const dateTime = DateTime.fromJSDate(date);
+            return dateTime.isValid ? dateTime.toISO() : null;
+        } catch (error) {
+            console.error('TaskDateUtils.dateToISO error:', error);
+            return null;
+        }
+    },
+
+    /**
+     * Check if a task is overdue based on its due_date
+     * @param task - The task to check
+     * @returns true if the task is overdue, false otherwise
+     */
+    isTaskOverdue: (task: { due_date?: string | null }): boolean => {
+        if (!task.due_date) return false;
+
+        try {
+            const dueDate = DateTime.fromISO(task.due_date);
+            if (!dueDate.isValid) return false;
+
+            const now = DateTime.now();
+            return dueDate < now;
+        } catch (error) {
+            console.error(
+                'TaskDateUtils.isTaskOverdue error:',
+                error
+            );
+            return false;
+        }
+    },
+
+    /**
+     * Filter tasks to get only schedulable ones (not completed, no parent, not overdue)
+     * @param tasks - Array of tasks to filter
+     * @returns Array of schedulable tasks
+     */
+    getSchedulableTasks: <
+        T extends {
+            completed?: boolean;
+            parent_id?: string;
+            due_date?: string | null;
+        },
+    >(
+        tasks: T[]
+    ): T[] => {
+        return tasks.filter(
+            (task) =>
+                !task.completed &&
+                !task.parent_id &&
+                !TaskDateUtils.isTaskOverdue(task)
+        );
+    },
+};
+
 export default function DateHelper(date: string | Date | DateTime) {
     const dateTime = formatDatesToDateTime(date);
 
@@ -34,7 +140,13 @@ export const CalendarDateUtils = {
         );
     },
 
-    getWorkHours: () => Array.from({ length: 10 }, (_, i) => i + 9), // 9 AM to 6 PM
+    getWorkHours: (startHour: number = 9, endHour: number = 18) => {
+        const hours = [];
+        for (let i = startHour; i < endHour; i++) {
+            hours.push(i);
+        }
+        return hours;
+    },
 
     formatTimeRange: (start: Date, end: Date): string => {
         const startTime =
@@ -188,7 +300,7 @@ function formatDatesToDateTime(
     if (!date) {
         return DateTime.now();
     }
-    if (date instanceof DateTime) {
+    if (DateTime.isDateTime(date)) {
         return date;
     }
     if (date instanceof Date) {

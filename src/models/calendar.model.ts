@@ -6,6 +6,8 @@ export interface CalendarEvent {
     allDay: boolean;
     description?: string;
     location?: string;
+    priority?: 'low' | 'medium' | 'high';
+    tags?: string[];
 }
 
 export interface ScheduledTask {
@@ -15,6 +17,9 @@ export interface ScheduledTask {
     end: Date;
     priority: 'low' | 'medium' | 'high';
     estimatedDuration: number; // in minutes
+    description?: string;
+    location?: string;
+    tags?: string[];
 }
 
 export interface SchedulingResult {

@@ -8,8 +8,8 @@ type FormModalProps<TModel extends Record<string, unknown>> = Omit<
     ModalProps,
     'onConfirm' | 'children'
 > &
-    Omit<FormBuilderProps<TModel>, 'onSubmit'> & {
-        onSubmit: (data: Record<string, unknown>) => void;
+    FormBuilderProps<TModel> & {
+        onSubmit: (data: TModel) => void;
     };
 
 export default function FormModal<

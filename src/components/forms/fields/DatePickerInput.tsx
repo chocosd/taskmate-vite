@@ -1,3 +1,4 @@
+import DateHelper from '@utils/helpers/date.helper';
 import { DateTime } from 'luxon';
 import BaseInput, { FormInputProps } from './BaseInput';
 
@@ -14,12 +15,13 @@ export default function DatePickerInput({
     error,
     hint,
 }: DatePickerInputProps) {
-    const localDateValue = value
-        ? DateTime.fromISO(value).toFormat("yyyy-MM-dd'T'HH:mm")
-        : '';
+    const localDateValue = DateHelper(value).format(
+        "yyyy-MM-dd'T'HH:mm"
+    );
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
+
         const iso = val
             ? DateTime.fromFormat(val, "yyyy-MM-dd'T'HH:mm").toISO()
             : '';
