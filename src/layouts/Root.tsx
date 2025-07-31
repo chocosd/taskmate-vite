@@ -12,6 +12,7 @@ const titleMap: Record<string, string> = {
     [Routes.About]: 'About',
     [Routes.Settings]: 'Settings',
     [Routes.Dashboard]: 'Dashboard',
+    [Routes.Calendar]: 'Calendar',
 };
 
 export default function Root() {

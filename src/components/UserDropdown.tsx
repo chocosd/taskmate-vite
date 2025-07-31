@@ -17,7 +17,16 @@ export default function ProfileDropdown() {
     const goToConnections = () => {
         setIsOpen(false);
         navigate(`/${Routes.Connections}`, { replace: true });
-        console.log('hey?');
+    };
+
+    const goToCalendar = () => {
+        setIsOpen(false);
+        navigate(`/${Routes.Calendar}`, { replace: true });
+    };
+
+    const goToDashboard = () => {
+        setIsOpen(false);
+        navigate(`/${Routes.Dashboard}`, { replace: true });
     };
 
     return (
@@ -26,13 +35,19 @@ export default function ProfileDropdown() {
                 <ProfilePicture user={profile} />
             </DropdownMenuTrigger>
             <DropdownMenuContent isOpen={isOpen}>
+                <DropdownMenuItem onClick={goToDashboard}>
+                    Dashboard
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={goToCalendar}>
+                    Calendar
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={goToConnections}>
+                    Connections
+                </DropdownMenuItem>
                 <DropdownMenuItem
                     onClick={() => console.log('Account')}
                 >
                     Account
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={goToConnections}>
-                    Connections
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout}>

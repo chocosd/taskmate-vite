@@ -5,4 +5,5 @@ export enum Routes {
     Dashboard = 'dashboard',
     Settings = 'settings',
     Profile = 'profile',
+    Calendar = 'calendar',
 }
