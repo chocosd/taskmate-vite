@@ -3,7 +3,7 @@ import Loading from '@components/ui/Loading';
 import { supabase } from '@lib/supabaseClient';
 import { Profile } from '@models/profile.model';
 import { User } from '@supabase/supabase-js';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SignUpPayload } from './auth-context.model';
 import { AuthContext } from './auth.context';
 
@@ -15,6 +15,7 @@ export default function AuthProvider({
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<Profile | null>(null);
     const [loading, setLoading] = useState(true);
+    const lastFetchedUserId = useRef<string | null>(null);
 
     useEffect(() => {
         const { data: listener } = supabase.auth.onAuthStateChange(
@@ -42,8 +43,16 @@ export default function AuthProvider({
         const fetchProfile = async () => {
             if (!user) {
                 setProfile(null);
+                lastFetchedUserId.current = null;
                 return;
             }
+
+            // Only fetch if we haven't already fetched for this user
+            if (lastFetchedUserId.current === user.id) {
+                return;
+            }
+
+            lastFetchedUserId.current = user.id;
 
             const { data: profileData, error: profileError } =
                 await supabase

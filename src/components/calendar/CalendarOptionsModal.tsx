@@ -74,7 +74,6 @@ export default function CalendarOptionsModal() {
             config: {
                 min: 0,
                 max: 1,
-                step: 0.1,
                 hint: 'Higher values make AI more creative, lower values more conservative (0-1)',
             },
         },
@@ -82,17 +81,17 @@ export default function CalendarOptionsModal() {
             name: 'aiModel',
             type: FormFieldType.SELECT,
             label: 'AI Model',
+            options: [
+                {
+                    value: 'gpt-3.5-turbo',
+                    label: 'GPT-3.5 Turbo (Fast)',
+                },
+                {
+                    value: 'gpt-4',
+                    label: 'GPT-4 (Better Quality)',
+                },
+            ],
             config: {
-                options: [
-                    {
-                        value: 'gpt-3.5-turbo',
-                        label: 'GPT-3.5 Turbo (Fast)',
-                    },
-                    {
-                        value: 'gpt-4',
-                        label: 'GPT-4 (Better Quality)',
-                    },
-                ],
                 hint: 'AI model to use for task scheduling',
             },
         },

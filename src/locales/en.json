@@ -1,0 +1,112 @@
+{
+    "COMMON": {
+        "SAVE": "Save",
+        "CANCEL": "Cancel",
+        "DELETE": "Delete",
+        "EDIT": "Edit",
+        "CLOSE": "Close",
+        "SUBMIT": "Submit",
+        "LOADING": "Loading...",
+        "ERROR": "Error",
+        "SUCCESS": "Success"
+    },
+    "AUTH": {
+        "LOGIN": "Login",
+        "LOGOUT": "Logout",
+        "SIGNUP": "Sign Up",
+        "EMAIL": "Email",
+        "PASSWORD": "Password",
+        "FORGOT_PASSWORD": "Forgot Password?",
+        "RESET_PASSWORD": "Reset Password",
+        "CONFIRM_PASSWORD": "Confirm Password",
+        "ALREADY_HAVE_ACCOUNT": "Already have an account?",
+        "DONT_HAVE_ACCOUNT": "Don't have an account?",
+        "INVALID_EMAIL": "Invalid email address",
+        "PASSWORD_TOO_SHORT": "Password must be at least 6 characters",
+        "PASSWORDS_DONT_MATCH": "Passwords don't match"
+    },
+    "TASKS": {
+        "ADD_TASK": "Add Task",
+        "TASK_NAME": "Task Name",
+        "PRIORITY": "Priority",
+        "DUE_DATE": "Due Date",
+        "ASSIGNEE": "Assignee",
+        "DESCRIPTION": "Description",
+        "SUBTASKS": "Subtasks",
+        "COMPLETE": "Complete",
+        "INCOMPLETE": "Incomplete",
+        "OVERDUE": "Overdue",
+        "TODAY": "Today",
+        "TOMORROW": "Tomorrow",
+        "THIS_WEEK": "This Week",
+        "NEXT_WEEK": "Next Week",
+        "NO_DUE_DATE": "No Due Date",
+        "TASKS_SELECTED": "{count} task(s) selected",
+        "VOICE_INPUT_PLACEHOLDER": "Add a new task",
+        "VOICE_INPUT_RECEIVED": "Voice input received!",
+        "VOICE_START_LISTENING": "Start voice input",
+        "VOICE_STOP_LISTENING": "Stop listening"
+    },
+    "TASK_VIEW": {
+        "ORGANIZE_SCHEDULE": "Organize Your Schedule",
+        "ORGANIZE_SCHEDULE_DESCRIPTION": "You have {count} tasks that can be scheduled",
+        "CALENDAR": "Calendar",
+        "SELECT_TASKS": "Select Tasks",
+        "TASKS_SELECTED": "{count} task(s) selected",
+        "SELECT_ALL": "Select All",
+        "DESELECT_ALL": "Deselect All",
+        "BULK_COMPLETE": "Complete",
+        "BULK_DELETE": "Delete",
+        "DELETE_CONFIRMATION": "Are you sure you want to delete {size} task(s)?"
+    },
+    "TASK_TABS": {
+        "ALL": "All",
+        "ACTIVE": "Active",
+        "COMPLETED": "Completed",
+        "OVERDUE": "Overdue",
+        "CREATED_BY": "Created By"
+    },
+    "CALENDAR": {
+        "DAY_VIEW": "Day View",
+        "WEEK_VIEW": "Week View",
+        "MONTH_VIEW": "Month View",
+        "TODAY": "Today",
+        "PREVIOUS": "Previous",
+        "NEXT": "Next",
+        "NO_EVENTS": "No events scheduled",
+        "NO_TASKS": "No tasks scheduled",
+        "EVENT_DURATION": "{duration}",
+        "TASK_DURATION": "{duration} min",
+        "PRIORITY_HIGH": "High Priority",
+        "PRIORITY_MEDIUM": "Medium Priority",
+        "PRIORITY_LOW": "Low Priority"
+    },
+    "PROFILE": {
+        "PROFILE": "Profile",
+        "SETTINGS": "Settings",
+        "PREFERENCES": "Preferences",
+        "NOTIFICATIONS": "Notifications",
+        "PRIVACY": "Privacy",
+        "SECURITY": "Security",
+        "HELP": "Help",
+        "ABOUT": "About",
+        "LOGOUT": "Logout"
+    },
+    "TOAST": {
+        "TASK_CREATED": "Task created successfully",
+        "TASK_UPDATED": "Task updated successfully",
+        "TASK_DELETED": "Task deleted successfully",
+        "TASK_COMPLETED": "Task completed",
+        "TASK_INCOMPLETE": "Task marked as incomplete",
+        "ERROR_OCCURRED": "An error occurred",
+        "CHANGES_SAVED": "Changes saved successfully"
+    },
+    "VALIDATION": {
+        "REQUIRED": "This field is required",
+        "INVALID_EMAIL": "Please enter a valid email address",
+        "PASSWORD_MIN_LENGTH": "Password must be at least {min} characters",
+        "PASSWORDS_MUST_MATCH": "Passwords must match",
+        "INVALID_DATE": "Please enter a valid date",
+        "DATE_IN_PAST": "Date cannot be in the past"
+    }
+}
