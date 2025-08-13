@@ -5,15 +5,17 @@ import { useSupabaseTasks } from '@context/supabase-tasks/useSupabaseTasks';
 import { useToast } from '@context/toast/useToast';
 import { ToastType } from '@enums/toast-type.enum';
 import { Task } from '@models/task.model';
+import { verifyProofWithChatGPT } from '@services/proofVerification.service';
 import { taskStyles } from '@styles/taskClassNames';
 import GeneratingIndicator from '@ui/GeneratingIndicator';
 import Modal, { ButtonActions } from '@ui/Modal';
 import ProgressBar from '@ui/ProgressBar';
 import { generateTasksFromPrompt } from '@utils/generate-tasks-from-prompt';
-import { Trash2 } from 'lucide-react';
+import { Shield, ShieldCheck, Trash2 } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ProofSubmissionModal from '../ProofSubmissionModal';
 import TaskActionsBar from './TaskActionsBar';
 import TaskEditModal from './TaskEditModal';
 import TaskItemHeader from './TaskItemHeader';
@@ -24,6 +26,9 @@ type TaskItemProps = {
     onDragOver?: (e: React.DragEvent) => void;
     onDrop?: () => void;
     isDragging?: boolean;
+    isSelected?: boolean;
+    onSelectionChange?: (isSelected: boolean) => void;
+    showSelection?: boolean;
 };
 
 export default function TaskItem({
@@ -32,6 +37,9 @@ export default function TaskItem({
     onDragStart,
     onDrop,
     isDragging = false,
+    isSelected = false,
+    onSelectionChange,
+    showSelection = false,
 }: TaskItemProps) {
     const {
         addTasksBatch,
@@ -42,6 +50,7 @@ export default function TaskItem({
         toggleTask,
         addTask,
         deleteTask,
+        updateTaskProof,
     } = useSupabaseTasks();
     const { user } = useAuth();
     const { showToast } = useToast();
@@ -55,6 +64,8 @@ export default function TaskItem({
         setIsGeneratingSubtasksInModal,
     ] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [showProofModal, setShowProofModal] = useState(false);
+    const [isVerifyingProof, setIsVerifyingProof] = useState(false);
 
     const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
     const [pendingRenameTask, setPendingRenameTask] =
@@ -100,7 +111,62 @@ export default function TaskItem({
         setSubtaskInputOpen(true);
     };
 
-    const handleTaskToggleOnChange = () => toggleTask(task.id);
+    const handleTaskToggleOnChange = () => {
+        // If task requires proof and is not completed, show proof modal
+        if (task.requires_proof && !task.completed) {
+            setShowProofModal(true);
+        } else {
+            toggleTask(task.id);
+        }
+    };
+
+    const handleProofSubmission = async (file: File) => {
+        setIsVerifyingProof(true);
+
+        try {
+            // Verify the proof with ChatGPT
+            const verificationResult = await verifyProofWithChatGPT(
+                task.title,
+                task.title, // Using title as description for now
+                file
+            );
+
+            if (verificationResult.isValid) {
+                // Proof is valid, complete the task with proof text
+                const proofText = `File: ${file.name} - Verified with ${Math.round(verificationResult.confidence * 100)}% confidence. ${verificationResult.reasoning}`;
+                await updateTaskProof(task.id, proofText);
+                showToast(
+                    ToastType.Success,
+                    `Proof verified! Task completed with ${Math.round(verificationResult.confidence * 100)}% confidence.`
+                );
+            } else {
+                // Proof is invalid, show the reasoning
+                showToast(
+                    ToastType.Error,
+                    `Proof verification failed: ${verificationResult.reasoning}`
+                );
+
+                // Show suggestions if available
+                if (
+                    verificationResult.suggestions &&
+                    verificationResult.suggestions.length > 0
+                ) {
+                    console.log(
+                        'Suggestions for better proof:',
+                        verificationResult.suggestions
+                    );
+                }
+            }
+        } catch (error) {
+            console.error('Proof verification error:', error);
+            showToast(
+                ToastType.Error,
+                `Proof verification failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+            );
+        } finally {
+            setIsVerifyingProof(false);
+        }
+    };
 
     const handleTaskDeleteOnChange = () => {
         if (task.subtasks?.length) {
@@ -252,11 +318,31 @@ export default function TaskItem({
                 onDragStart={onDragStart}
                 onDragOver={onDragOver}
                 onDrop={onDrop}
-                className={`${taskClass()} relative group ${dragClass}`}
+                className={`${taskClass()} relative group ${dragClass} ${
+                    isSelected
+                        ? 'ring-2 ring-blue-500 bg-blue-600/10'
+                        : ''
+                }`}
             >
                 <div
                     className={`flex w-full items-start justify-start gap-3 ${completedTaskClass()}`}
                 >
+                    {/* Selection Checkbox */}
+                    {showSelection && (
+                        <div className="flex-shrink-0 mt-1">
+                            <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={(e) =>
+                                    onSelectionChange?.(
+                                        e.target.checked
+                                    )
+                                }
+                                className="w-4 h-4 text-blue-600 bg-zinc-700 border-zinc-600 rounded focus:ring-blue-500 focus:ring-2"
+                            />
+                        </div>
+                    )}
+
                     <div className="w-full flex flex-col gap-2">
                         <TaskItemHeader
                             task={task}
@@ -268,6 +354,18 @@ export default function TaskItem({
                                 handleTaskToggleOnChange
                             }
                         />
+
+                        {/* Proof Status Indicator */}
+                        {task.requires_proof && (
+                            <div className="flex items-center gap-1">
+                                {task.proof_submitted ? (
+                                    <ShieldCheck className="w-4 h-4 text-green-500" />
+                                ) : (
+                                    <Shield className="w-4 h-4 text-yellow-500" />
+                                )}
+                            </div>
+                        )}
+
                         {isGeneratingSubtasks ? (
                             <div className="flex w-full items-start gap-2 mt-2">
                                 <GeneratingIndicator message="Generating subtasks from task..." />
@@ -347,6 +445,19 @@ export default function TaskItem({
                 isOpen={isEditTaskModalOpen}
                 onClose={() => setIsEditTaskModalOpen(false)}
             />
+            <ProofSubmissionModal
+                isOpen={showProofModal}
+                onClose={() => setShowProofModal(false)}
+                onSubmit={handleProofSubmission}
+                task={task}
+            />
+            {isVerifyingProof && (
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+                    <div className="bg-zinc-900 text-white rounded-lg p-6 max-w-md shadow-lg">
+                        <GeneratingIndicator message="Verifying proof with AI..." />
+                    </div>
+                </div>
+            )}
         </>
     );
 }

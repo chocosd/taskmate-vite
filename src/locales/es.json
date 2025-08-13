@@ -1,0 +1,112 @@
+{
+    "COMMON": {
+        "SAVE": "Guardar",
+        "CANCEL": "Cancelar",
+        "DELETE": "Eliminar",
+        "EDIT": "Editar",
+        "CLOSE": "Cerrar",
+        "SUBMIT": "Enviar",
+        "LOADING": "Cargando...",
+        "ERROR": "Error",
+        "SUCCESS": "Éxito"
+    },
+    "AUTH": {
+        "LOGIN": "Iniciar Sesión",
+        "LOGOUT": "Cerrar Sesión",
+        "SIGNUP": "Registrarse",
+        "EMAIL": "Correo Electrónico",
+        "PASSWORD": "Contraseña",
+        "FORGOT_PASSWORD": "¿Olvidaste tu contraseña?",
+        "RESET_PASSWORD": "Restablecer Contraseña",
+        "CONFIRM_PASSWORD": "Confirmar Contraseña",
+        "ALREADY_HAVE_ACCOUNT": "¿Ya tienes una cuenta?",
+        "DONT_HAVE_ACCOUNT": "¿No tienes una cuenta?",
+        "INVALID_EMAIL": "Dirección de correo electrónico inválida",
+        "PASSWORD_TOO_SHORT": "La contraseña debe tener al menos 6 caracteres",
+        "PASSWORDS_DONT_MATCH": "Las contraseñas no coinciden"
+    },
+    "TASKS": {
+        "ADD_TASK": "Agregar Tarea",
+        "TASK_NAME": "Nombre de la Tarea",
+        "PRIORITY": "Prioridad",
+        "DUE_DATE": "Fecha de Vencimiento",
+        "ASSIGNEE": "Asignado a",
+        "DESCRIPTION": "Descripción",
+        "SUBTASKS": "Subtareas",
+        "COMPLETE": "Completar",
+        "INCOMPLETE": "Incompleto",
+        "OVERDUE": "Vencido",
+        "TODAY": "Hoy",
+        "TOMORROW": "Mañana",
+        "THIS_WEEK": "Esta Semana",
+        "NEXT_WEEK": "Próxima Semana",
+        "NO_DUE_DATE": "Sin Fecha de Vencimiento",
+        "TASKS_SELECTED": "{count} tarea(s) seleccionada(s)",
+        "VOICE_INPUT_PLACEHOLDER": "Agregar una nueva tarea",
+        "VOICE_INPUT_RECEIVED": "¡Entrada de voz recibida!",
+        "VOICE_START_LISTENING": "Iniciar entrada de voz",
+        "VOICE_STOP_LISTENING": "Detener escucha"
+    },
+    "TASK_VIEW": {
+        "ORGANIZE_SCHEDULE": "Organiza tu Horario",
+        "ORGANIZE_SCHEDULE_DESCRIPTION": "Tienes {count} tareas que se pueden programar",
+        "CALENDAR": "Calendario",
+        "SELECT_TASKS": "Seleccionar Tareas",
+        "TASKS_SELECTED": "{count} tarea(s) seleccionada(s)",
+        "SELECT_ALL": "Seleccionar Todo",
+        "DESELECT_ALL": "Deseleccionar Todo",
+        "BULK_COMPLETE": "Completar",
+        "BULK_DELETE": "Eliminar",
+        "DELETE_CONFIRMATION": "¿Estás seguro de que quieres eliminar {size} tarea(s)?"
+    },
+    "TASK_TABS": {
+        "ALL": "Todas",
+        "ACTIVE": "Activas",
+        "COMPLETED": "Completadas",
+        "OVERDUE": "Vencidas",
+        "CREATED_BY": "Creadas Por Mí"
+    },
+    "CALENDAR": {
+        "DAY_VIEW": "Vista Diaria",
+        "WEEK_VIEW": "Vista Semanal",
+        "MONTH_VIEW": "Vista Mensual",
+        "TODAY": "Hoy",
+        "PREVIOUS": "Anterior",
+        "NEXT": "Siguiente",
+        "NO_EVENTS": "No hay eventos programados",
+        "NO_TASKS": "No hay tareas programadas",
+        "EVENT_DURATION": "{duration}",
+        "TASK_DURATION": "{duration} min",
+        "PRIORITY_HIGH": "Prioridad Alta",
+        "PRIORITY_MEDIUM": "Prioridad Media",
+        "PRIORITY_LOW": "Prioridad Baja"
+    },
+    "PROFILE": {
+        "PROFILE": "Perfil",
+        "SETTINGS": "Configuración",
+        "PREFERENCES": "Preferencias",
+        "NOTIFICATIONS": "Notificaciones",
+        "PRIVACY": "Privacidad",
+        "SECURITY": "Seguridad",
+        "HELP": "Ayuda",
+        "ABOUT": "Acerca de",
+        "LOGOUT": "Cerrar Sesión"
+    },
+    "TOAST": {
+        "TASK_CREATED": "Tarea creada exitosamente",
+        "TASK_UPDATED": "Tarea actualizada exitosamente",
+        "TASK_DELETED": "Tarea eliminada exitosamente",
+        "TASK_COMPLETED": "Tarea completada",
+        "TASK_INCOMPLETE": "Tarea marcada como incompleta",
+        "ERROR_OCCURRED": "Ocurrió un error",
+        "CHANGES_SAVED": "Cambios guardados exitosamente"
+    },
+    "VALIDATION": {
+        "REQUIRED": "Este campo es requerido",
+        "INVALID_EMAIL": "Por favor ingresa una dirección de correo electrónico válida",
+        "PASSWORD_MIN_LENGTH": "La contraseña debe tener al menos {min} caracteres",
+        "PASSWORDS_MUST_MATCH": "Las contraseñas deben coincidir",
+        "INVALID_DATE": "Por favor ingresa una fecha válida",
+        "DATE_IN_PAST": "La fecha no puede estar en el pasado"
+    }
+}

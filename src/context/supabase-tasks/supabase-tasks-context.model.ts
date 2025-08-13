@@ -31,6 +31,7 @@ export type OptionsData = {
     assignee: FormOption;
     due_date: string;
     priority: TaskPriority;
+    requires_proof: boolean;
 };
 
 export type SupabaseTasksContextType = {
@@ -42,6 +43,7 @@ export type SupabaseTasksContextType = {
     reorderTasks: (reordered: Task[]) => Promise<void>;
     renameTask: (id: string, title: string) => Promise<void>;
     updateTask: (id: string, updates: Partial<Task>) => Promise<void>;
+    updateTaskProof: (id: string, proofText: string) => Promise<void>;
     deleteSubTasks: (id: string) => Promise<void>;
     deleteTaskWithSubtasks: (id: string) => Promise<void>;
     updateSubtaskTitles: (

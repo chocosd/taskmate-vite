@@ -22,13 +22,23 @@ export function SupabaseTasksProvider({
 
         hasFetched.current = true;
 
-        service.setLoading(true);
+        const fetchData = async () => {
+            service.setLoading(true);
 
-        service.fetchAssignedTasks();
-        service.fetchCreatedTasks();
-        service.fetchConnections();
+            try {
+                await Promise.all([
+                    service.fetchAssignedTasks(),
+                    service.fetchCreatedTasks(),
+                    service.fetchConnections(),
+                ]);
+            } catch (error) {
+                console.error('Error fetching initial data:', error);
+            } finally {
+                service.setLoading(false);
+            }
+        };
 
-        service.setLoading(false);
+        fetchData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 

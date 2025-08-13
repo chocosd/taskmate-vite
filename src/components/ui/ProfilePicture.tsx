@@ -31,10 +31,10 @@ export default function ProfilePicture({
     const initials = name?.[0]?.toUpperCase() ?? '?';
     const bgColor = stringToColor(name ?? 'default');
 
-    if (user?.profile_picture) {
+    if (user?.profile_image) {
         return (
             <img
-                src={user?.profile_picture}
+                src={user?.profile_image}
                 alt={name}
                 className="rounded-full object-cover"
                 style={{

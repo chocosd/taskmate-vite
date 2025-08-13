@@ -16,6 +16,7 @@ const defaultOptions = {
     assignee: { label: '', value: '' },
     due_date: '',
     priority: TaskPriority.Low,
+    requires_proof: false,
 };
 
 export function useSupabaseTasksService(
@@ -143,6 +144,7 @@ export function useSupabaseTasksService(
                 due_date: optionsData.due_date,
             }),
             priority: optionsData.priority ?? TaskPriority.Low,
+            requires_proof: optionsData.requires_proof ?? false,
         };
 
         const { data, error } = await supabase
@@ -172,6 +174,7 @@ export function useSupabaseTasksService(
                 due_date: optionsData.due_date,
             }),
             priority: optionsData.priority ?? TaskPriority.Low,
+            requires_proof: optionsData.requires_proof ?? false,
         }));
 
         const { data, error } = await supabase
@@ -347,6 +350,29 @@ export function useSupabaseTasksService(
         }
     };
 
+    const updateTaskProof = async (id: string, proofText: string) => {
+        const { data, error } = await supabase
+            .from('tasks')
+            .update({
+                proof_submitted: true,
+                proof_text: proofText,
+                completed: true,
+            })
+            .eq('id', id)
+            .select();
+
+        if (!error && data?.[0]) {
+            syncTaskStates(id, (tasks) =>
+                tasks.map((task) => (task.id === id ? data[0] : task))
+            );
+        }
+
+        if (error) {
+            console.error('[updateTaskProof] Failed:', error.message);
+            throw error;
+        }
+    };
+
     const reorderTasks = async (reordered: Task[]) => {
         const updatedTasks = getTasksWithUpdatedOrder(
             tasks,
@@ -408,6 +434,7 @@ export function useSupabaseTasksService(
         reorderTasks,
         renameTask,
         updateTask,
+        updateTaskProof,
         updateSubtaskTitles,
         toggleTask,
         deleteTaskWithSubtasks,

@@ -9,6 +9,7 @@ export const createOptionFields = (
     assignee: string;
     due_date: Date;
     priority: string;
+    requires_proof: boolean;
 }>[] => [
     {
         type: FormFieldType.AUTOCOMPLETE,
@@ -48,5 +49,13 @@ export const createOptionFields = (
             { label: 'Medium', value: 'medium' },
             { label: 'High', value: 'high' },
         ],
+    },
+    {
+        type: FormFieldType.CHECKBOX,
+        name: 'requires_proof',
+        label: 'Request Proof',
+        config: {
+            hint: 'Require proof submission when completing this task',
+        },
     },
 ];

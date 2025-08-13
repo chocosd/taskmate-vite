@@ -13,7 +13,7 @@ type FormModalProps<TModel extends Record<string, unknown>> = Omit<
     };
 
 export default function FormModal<
-    TModel extends Record<string, unknown>,
+    TModel extends Record<string, unknown> = Record<string, unknown>,
 >({
     isOpen,
     onClose,

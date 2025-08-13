@@ -14,6 +14,9 @@ export type Task = {
     assigned_to_user_id?: string | undefined;
     priority?: TaskPriority;
     due_date?: string | null;
+    requires_proof?: boolean;
+    proof_submitted?: boolean;
+    proof_text?: string;
 };
 
 export enum TaskPriority {

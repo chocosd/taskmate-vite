@@ -9,6 +9,11 @@ const __dirname = dirname(__filename);
 
 export default defineConfig({
     plugins: [react(), tailwindcss()],
+    css: {
+        modules: {
+            localsConvention: 'camelCase',
+        },
+    },
     resolve: {
         alias: {
             '@components': resolve(__dirname, 'src/components'),
@@ -26,6 +31,7 @@ export default defineConfig({
             '@context': resolve(__dirname, 'src/context'),
             '@styles': resolve(__dirname, 'src/styles'),
             '@services': resolve(__dirname, 'src/services'),
+            '@providers': resolve(__dirname, 'src/providers'),
         },
     },
 });
